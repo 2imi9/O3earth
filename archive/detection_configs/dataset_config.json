@@ -1,0 +1,49 @@
+{
+  "layers": {
+    "sentinel2_l2a": {
+      "band_sets": [{
+        "bands": ["B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B8A", "B09", "B11", "B12"],
+        "dtype": "uint16"
+      }],
+      "data_source": {
+        "class_path": "rslearn.data_sources.planetary_computer.Sentinel2",
+        "init_args": {
+          "cache_dir": "cache/planetary_computer",
+          "harmonize": true,
+          "sort_by": "eo:cloud_cover"
+        },
+        "query_config": {
+          "max_matches": 4,
+          "period_duration": "30d",
+          "space_mode": "PER_PERIOD_MOSAIC"
+        }
+      },
+      "type": "raster"
+    },
+
+    "eia_energy": {
+      "band_sets": [{
+        "bands": ["label"],
+        "dtype": "uint8"
+      }],
+      "data_source": {
+        "class_path": "data_sources.eia_860.EIA860",
+        "init_args": {
+          "csv_path": "source_data/eia860/3_1_Generator_Y2024_merged.csv",
+          "buffer_meters": 500,
+          "min_capacity_mw": 1.0
+        }
+      },
+      "resampling_method": "nearest",
+      "type": "raster"
+    },
+
+    "output": {
+      "band_sets": [{
+        "bands": ["output"],
+        "dtype": "uint8"
+      }],
+      "type": "raster"
+    }
+  }
+}
