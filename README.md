@@ -6,7 +6,7 @@ O3 EartH uses frozen [OlmoEarth](https://github.com/allenai/olmoearth_pretrain) 
 
 **O3** represents the three pillars of sustainability: Environmental, Social, and Economic.
 
-> Ziming (Frank) Qi | Northeastern University
+> Ziming Qi | Northeastern University
 
 ## Results
 
@@ -62,7 +62,7 @@ XGBoost Classifier --> Suitability Score (0-1)
 - **8,000 embeddings** extracted across solar, wind, hydro, geothermal
 - **321,614 global energy locations** from EIA API + OSM Overpass
 - **100+ countries** represented
-- Available on HuggingFace: [2imi9/OpenEnergy-Suitability](https://huggingface.co/datasets/2imi9/OpenEnergy-Suitability)
+- Available on HuggingFace: [2imi9/O3earth](https://huggingface.co/datasets/2imi9/O3earth)
 
 ## Project Structure
 
