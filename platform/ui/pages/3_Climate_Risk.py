@@ -20,6 +20,7 @@ init_state()
 render_sidebar()
 
 st.header("Climate Risk Assessment")
+st.info("Note: Climate risk data is currently simulated. Real climate API integration is planned for a future release.")
 
 # ------------------------------------------------------------------
 # Input form

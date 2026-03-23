@@ -63,7 +63,7 @@ with col3:
 
 st.divider()
 
-col4, col5, col6 = st.columns(3)
+col4, col5 = st.columns(2)
 
 with col4:
     st.subheader("Climate Risk")
@@ -71,11 +71,6 @@ with col4:
     st.page_link("pages/3_Climate_Risk.py", label="Assess Risk", icon="🌡️")
 
 with col5:
-    st.subheader("Asset Valuation")
-    st.write("Calculate NPV, IRR, LCOE with 25-year cash flow projections.")
-    st.page_link("pages/4_Asset_Valuation.py", label="Value Asset", icon="📈")
-
-with col6:
     st.subheader("Dashboard")
     st.write("Overview of recent analyses, API health, and module availability.")
     st.page_link("pages/1_Dashboard.py", label="View Dashboard", icon="📊")

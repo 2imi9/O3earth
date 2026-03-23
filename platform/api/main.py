@@ -80,12 +80,10 @@ app.add_middleware(
 )
 
 # Import and include route modules
-from api.routes import detection, climate, valuation, eia, llm, suitability  # noqa: E402
+from api.routes import climate, eia, llm, suitability  # noqa: E402
 
 app.include_router(suitability.router, prefix="/api", tags=["suitability"])
-app.include_router(detection.router, prefix="/api", tags=["detection"])
 app.include_router(climate.router, prefix="/api", tags=["climate"])
-app.include_router(valuation.router, prefix="/api", tags=["valuation"])
 app.include_router(eia.router, prefix="/api", tags=["eia"])
 app.include_router(llm.router, prefix="/api", tags=["llm"])
 
