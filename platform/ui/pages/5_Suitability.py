@@ -53,21 +53,29 @@ if submitted:
         st.divider()
         st.subheader("Suitability Results")
 
-        score = result.get("suitability_score", 0.0)
+        combined = result.get("combined_score", 0.0)
+        factor_score = result.get("factor_score", 0.0)
+        ml_score = result.get("ml_score")
+        ml_available = result.get("ml_available", False)
         confidence = result.get("confidence", "unknown")
 
         if confidence == "high":
-            st.success(f"**High suitability** for {energy_type}: {score:.1%}")
+            st.success(f"**High suitability** for {energy_type}: {combined:.1%}")
         elif confidence == "moderate":
-            st.warning(f"**Moderate suitability** for {energy_type}: {score:.1%}")
+            st.warning(f"**Moderate suitability** for {energy_type}: {combined:.1%}")
         else:
-            st.error(f"**Low suitability** for {energy_type}: {score:.1%}")
+            st.error(f"**Low suitability** for {energy_type}: {combined:.1%}")
 
-        # Metrics
+        # Score comparison
         col1, col2, col3 = st.columns(3)
-        col1.metric("Suitability Score", f"{score:.1%}")
-        col2.metric("Energy Type", energy_type.title())
-        col3.metric("Location", f"{latitude:.3f}, {longitude:.3f}")
+        col1.metric("Combined Score", f"{combined:.1%}")
+        col2.metric("Factor Engine", f"{factor_score:.1%}")
+        if ml_available:
+            col3.metric("ML Model (OlmoEarth)", f"{ml_score:.1%}")
+        else:
+            col3.metric("ML Model", "No nearby embedding")
+
+        st.caption("Combined = 60% ML + 40% Factor Engine (when ML available)")
 
         # Factor breakdown
         factors = result.get("factors", {})

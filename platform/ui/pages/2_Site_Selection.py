@@ -74,7 +74,7 @@ with col2:
             )
         if result:
             st.session_state.last_suitability = result
-            score = result.get("suitability_score", 0)
+            score = result.get("combined_score", result.get("suitability_score", 0))
             confidence = result.get("confidence", "unknown")
             if confidence == "high":
                 st.success(f"High suitability: {score:.1%}")
