@@ -65,9 +65,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="OpenEnergy Engine API",
-    version="0.1.0",
-    description="Renewable energy detection, climate risk, and valuation API",
+    title="O3 EartH API",
+    version="0.2.0",
+    description="Geospatial site suitability, climate risk, and valuation API",
     lifespan=lifespan,
 )
 
@@ -80,8 +80,9 @@ app.add_middleware(
 )
 
 # Import and include route modules
-from api.routes import detection, climate, valuation, eia, llm  # noqa: E402
+from api.routes import detection, climate, valuation, eia, llm, suitability  # noqa: E402
 
+app.include_router(suitability.router, prefix="/api", tags=["suitability"])
 app.include_router(detection.router, prefix="/api", tags=["detection"])
 app.include_router(climate.router, prefix="/api", tags=["climate"])
 app.include_router(valuation.router, prefix="/api", tags=["valuation"])

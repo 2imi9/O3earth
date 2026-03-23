@@ -67,16 +67,18 @@ with col2:
     if st.button("Score Suitability", use_container_width=True):
         api = get_api_client()
         with st.spinner("Computing suitability score..."):
-            result = api.detect(
+            result = api.score_suitability(
                 latitude=st.session_state.selected_lat,
                 longitude=st.session_state.selected_lon,
+                energy_type="solar",
             )
         if result:
-            st.session_state.last_detection = result
-            score = result.get("detection_confidence", 0)
-            if score > 0.7:
+            st.session_state.last_suitability = result
+            score = result.get("suitability_score", 0)
+            confidence = result.get("confidence", "unknown")
+            if confidence == "high":
                 st.success(f"High suitability: {score:.1%}")
-            elif score > 0.4:
+            elif confidence == "moderate":
                 st.warning(f"Moderate suitability: {score:.1%}")
             else:
                 st.info(f"Low suitability: {score:.1%}")

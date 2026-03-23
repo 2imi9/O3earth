@@ -18,7 +18,7 @@ init_state()
 render_sidebar()
 
 st.header("Site Suitability Scoring")
-st.markdown("Score locations for renewable energy suitability using OlmoEarth foundation model embeddings + XGBoost classifier.")
+st.markdown("Score locations for renewable energy suitability using OlmoEarth foundation model embeddings + configurable factor engine.")
 
 # ------------------------------------------------------------------
 # Input form
@@ -32,7 +32,6 @@ with st.form("suitability_form"):
 
     with col2:
         energy_type = st.selectbox("Energy Type", ["solar", "wind", "hydro", "geothermal"])
-        date_range = st.text_input("Imagery Date Range", value="2022-01-01/2023-12-31")
 
     submitted = st.form_submit_button("Score Site", use_container_width=True)
 
@@ -41,35 +40,43 @@ with st.form("suitability_form"):
 # ------------------------------------------------------------------
 if submitted:
     api = get_api_client()
-    with st.spinner("Fetching satellite imagery and computing suitability score..."):
-        # For now, call the detection endpoint — will be replaced with suitability endpoint
-        result = api.detect(
+    with st.spinner(f"Computing {energy_type} suitability score..."):
+        result = api.score_suitability(
             latitude=latitude,
             longitude=longitude,
-            date_range=date_range,
-            max_cloud_cover=20.0,
+            energy_type=energy_type,
         )
 
     if result:
-        st.session_state.last_detection = result
+        st.session_state.last_suitability = result
 
         st.divider()
         st.subheader("Suitability Results")
 
-        # Score display
-        score = result.get("detection_confidence", 0.0)
-        if score > 0.7:
+        score = result.get("suitability_score", 0.0)
+        confidence = result.get("confidence", "unknown")
+
+        if confidence == "high":
             st.success(f"**High suitability** for {energy_type}: {score:.1%}")
-        elif score > 0.4:
+        elif confidence == "moderate":
             st.warning(f"**Moderate suitability** for {energy_type}: {score:.1%}")
         else:
             st.error(f"**Low suitability** for {energy_type}: {score:.1%}")
 
-        # Detail metrics
+        # Metrics
         col1, col2, col3 = st.columns(3)
         col1.metric("Suitability Score", f"{score:.1%}")
         col2.metric("Energy Type", energy_type.title())
         col3.metric("Location", f"{latitude:.3f}, {longitude:.3f}")
+
+        # Factor breakdown
+        factors = result.get("factors", {})
+        if factors:
+            st.divider()
+            st.subheader("Factor Breakdown")
+            cols = st.columns(min(len(factors), 4))
+            for i, (name, value) in enumerate(factors.items()):
+                cols[i % len(cols)].metric(name.replace("_", " ").title(), f"{value:.2f}")
 
         # Next steps
         st.divider()
@@ -81,5 +88,8 @@ if submitted:
     else:
         st.error("Could not compute suitability score. Check API connection.")
 
-elif st.session_state.get("last_detection"):
+elif st.session_state.get("last_suitability"):
+    result = st.session_state.last_suitability
     st.info("Showing previous result. Submit a new query above.")
+    score = result.get("suitability_score", 0)
+    st.metric("Last Score", f"{score:.1%}")

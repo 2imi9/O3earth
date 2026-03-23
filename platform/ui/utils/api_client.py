@@ -54,6 +54,31 @@ class EarthModelsAPI:
             return None
 
     # ------------------------------------------------------------------
+    # Suitability
+    # ------------------------------------------------------------------
+    def score_suitability(
+        self,
+        latitude: float,
+        longitude: float,
+        energy_type: str = "solar",
+    ) -> dict | None:
+        try:
+            r = self.session.post(
+                f"{self.base_url}/suitability",
+                json={
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "energy_type": energy_type,
+                },
+                timeout=120,
+            )
+            r.raise_for_status()
+            return r.json()
+        except Exception as e:
+            st.error(f"Suitability scoring failed: {e}")
+            return None
+
+    # ------------------------------------------------------------------
     # Climate Risk
     # ------------------------------------------------------------------
     def assess_climate_risk(
