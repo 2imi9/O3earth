@@ -48,3 +48,5 @@ data_sources/
 # Claude
 .claude/
 CLAUDE.md
+data/osm_energy_polygons.geojson
+*.geojson
