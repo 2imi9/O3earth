@@ -6,8 +6,7 @@ O3 EartH uses frozen [OlmoEarth](https://github.com/allenai/olmoearth_pretrain) 
 
 **O3** represents the three pillars of sustainability: Environmental, Social, and Economic.
 
-> Ziming (Frank) Qi | Northeastern University | Millennium Fellowship Research
-> Mentor: Professor Auroop Ratan Ganguly
+> Ziming (Frank) Qi | Northeastern University
 
 ## Results
 
