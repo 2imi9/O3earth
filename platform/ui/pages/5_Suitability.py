@@ -90,7 +90,6 @@ if submitted:
         st.divider()
         st.markdown("**Next Steps**")
         st.page_link("pages/3_Climate_Risk.py", label="Assess Climate Risk for this site")
-        st.page_link("pages/4_Asset_Valuation.py", label="Value this asset")
         st.page_link("pages/0_AI_Chat.py", label="Ask AI about this location")
 
     else:
