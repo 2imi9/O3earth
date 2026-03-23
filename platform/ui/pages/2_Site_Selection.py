@@ -70,7 +70,7 @@ with col2:
             result = api.score_suitability(
                 latitude=st.session_state.selected_lat,
                 longitude=st.session_state.selected_lon,
-                energy_type="solar",
+                energy_type=st.session_state.get("energy_type", "solar"),
             )
         if result:
             st.session_state.last_suitability = result
@@ -112,6 +112,5 @@ with col_b:
     st.session_state.selected_elevation = st.number_input("Elevation (m)", value=st.session_state.selected_elevation, step=10.0)
 
 with col_c:
-    asset_types = ["solar_utility", "solar_distributed", "wind_onshore", "wind_offshore", "hydro", "battery_storage"]
-    idx = asset_types.index(st.session_state.asset_type) if st.session_state.asset_type in asset_types else 0
-    st.session_state.asset_type = st.selectbox("Asset Type", asset_types, index=idx)
+    energy_types = ["solar", "wind", "hydro", "geothermal"]
+    st.session_state.energy_type = st.selectbox("Energy Type", energy_types, index=0)
