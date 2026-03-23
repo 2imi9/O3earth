@@ -75,7 +75,7 @@ if submitted:
         else:
             col3.metric("ML Model", "No nearby embedding")
 
-        st.caption("Combined = 60% ML + 40% Factor Engine (when ML available)")
+        st.caption("Combined = 60% ML + 40% Factor Engine (when ML available). ML score indicates land similarity to existing sites — type-specific differentiation comes from the factor engine.")
 
         # Factor breakdown
         factors = result.get("factors", {})
