@@ -38,6 +38,13 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Platform
+platform/.env
+
+# Reference repos (not ours)
+olmoearth_ref/
+data_sources/
+
 # Claude
 .claude/
 CLAUDE.md

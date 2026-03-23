@@ -1,10 +1,9 @@
-# OpenEnergy-Engine: Geospatial Site Suitability Assessment Using Foundation Model Embeddings — A Renewable Energy Case Study
+# O3 EartH: Geospatial Site Suitability Assessment Using Foundation Model Embeddings — A Renewable Energy Case Study
 
 **Author:** Ziming (Frank) Qi
 **Institution:** Northeastern University
-**Program:** Millennium Fellowship Research
-**Mentor:** Professor Auroop Ratan Ganguly
-**Repository:** github.com/2imi9/OpenEnergy-Engine
+**Program:** Senior Research
+**Repository:** github.com/2imi9/O3earth
 
 ---
 
@@ -25,8 +24,7 @@
 13. [Limitations & Generalizability](#13-limitations--generalizability)
 14. [NEMS Valuation (Future Work)](#14-nems-valuation-future-work)
 15. [References](#15-references)
-16. [Appendix A: Mentor Communication](#appendix-a-mentor-communication)
-17. [Appendix B: Detection Phase (Lessons Learned)](#appendix-b-detection-phase-lessons-learned)
+16. [Appendix: Detection Phase (Lessons Learned)](#appendix-detection-phase-lessons-learned)
 
 ---
 
@@ -542,43 +540,36 @@ The signal is distributed across the embedding space — the model leverages div
 
 ## 10. Platform Architecture
 
-The project consists of two repositories:
+O3 EartH is a single integrated project containing both the suitability model and the application platform.
 
-### Model/Engine Repo (FT_olmoearth — this repo)
-- OlmoEarth fine-tuning and feature extraction
-- Factor engine implementation
-- Suitability scoring pipeline
-- Dataset construction and validation
-
-### Application Platform (2imi9/OpenEnergy-Engine)
-Already built, waiting for the suitability model:
-
-| Component | Technology | Status |
+| Component | Technology | Location |
 |---|---|---|
-| OlmoEarth Model | ViT backbone, multi-task heads | Architecture complete |
-| Climate Risk Model | ACE2-inspired, SSP projections | Architecture complete |
-| NEMS Valuation Engine | NPV/IRR/LCOE calculations | Fully functional |
-| EIA Data Pipeline | EIA API v2 (860/923/AEO) | Fully functional |
-| Satellite Data Pipeline | Planetary Computer STAC API | Fully functional |
-| LLM Integration | vLLM (Qwen3-8B) or NVIDIA NIM | Fully functional |
-| MCP Server | Model Context Protocol | Fully functional |
-| REST API | FastAPI with Swagger docs | Fully functional |
-| Web Dashboard | Streamlit, interactive maps, AI chat | Fully functional |
+| Suitability Model | OlmoEarth embeddings + XGBoost | `src/`, `scripts/` |
+| Factor Engine | 19 configurable factors | `src/factors/`, `src/scoring/` |
+| REST API | FastAPI | `platform/api/` |
+| Web Dashboard | Streamlit, interactive maps, AI chat | `platform/ui/` |
+| LLM Integration | NVIDIA NIM (cloud) or vLLM (local) | `src/llm/` |
+| MCP Server | Model Context Protocol | `src/mcp/` |
+| Climate Risk | SSP scenarios, extreme events | `src/models/` |
+| Valuation Engine | NPV/IRR/LCOE | `src/valuation/` |
+| EIA Data Pipeline | EIA API v2 (860/923/AEO) | `src/data_clients/` |
+| Satellite Pipeline | Planetary Computer STAC API | `src/data_clients/` |
+| Containerization | Docker (CPU + GPU) | `platform/docker/` |
 
 ### API Endpoints
 
 | Endpoint | Method | Description |
 |---|---|---|
 | /api/health | GET | Module availability check |
-| /api/detect | POST | Satellite-based detection |
+| /api/suitability | POST | Site suitability scoring |
 | /api/climate-risk | POST | Climate risk assessment |
 | /api/value-asset | POST | 25-year NPV/IRR/LCOE valuation |
 | /api/eia/generators | GET | EIA generator inventory |
 | /api/eia/generation/{state} | GET | State generation data |
 | /api/eia/prices | GET | Price forecasts |
 | /api/eia/capacity/{source} | GET | Capacity forecasts |
-| /api/analyze | POST | LLM-powered analysis |
-| /api/report | POST | Formatted report generation |
+| /api/llm/analyze | POST | LLM-powered analysis |
+| /api/llm/chat | POST | Chat with tool support |
 
 ---
 
@@ -714,47 +705,9 @@ NEMS is open source (github.com/EIAgov/NEMS) and provides LCOE/LACE/value-cost r
 
 ---
 
-## Appendix A: Mentor Communication
-
-Dear Professor Ganguly,
-
-I hope this message finds you well. I wanted to provide a detailed update on my senior thesis research project, OpenEnergy-Engine, and share the current state of the platform, datasets, and infrastructure.
-
-### Project Overview
-
-**Repository:** github.com/2imi9/OpenEnergy-Engine
-**Goal:** AI-powered renewable energy site suitability scoring and risk analytics using geospatial foundation models
-
-### Research Direction
-
-After extensive experimentation with pixel-level energy infrastructure detection (29 runs, best F1=0.46), I pivoted the project direction based on a key insight: OlmoEarth at 10m Sentinel-2 resolution excels at landscape-scale land characterization, not sub-pixel object detection. The literature review confirmed no published work combines geospatial foundation model embeddings with configurable multi-criteria suitability scoring — this is the research gap we address.
-
-**Current approach:** Train on historical plant locations globally (OSM + EIA 860) as positive examples of site suitability. Use OlmoEarth embeddings as learned landscape features alongside external data (solar irradiance, wind speed, terrain, grid proximity). Validate with retroactive prediction (train on pre-2020 plants, test on 2021-2025) and cross-region transfer (train US/EU, test India/Brazil/Africa).
-
-### Platform Status
-
-The application platform (web API, MCP server, LLM integration, Streamlit dashboard, NEMS valuation engine) is fully built and waiting for the suitability model. The factor engine and scoring pipeline are the current development focus.
-
-### Datasets
-
-Sentinel-2 (global, 10m), EIA 860/923 (US plants), OSM (1.66M global energy polygons), NREL NSRDB/Wind Toolkit (solar/wind resource), USGS elevation, and others detailed in the thesis document.
-
-### Questions for Discussion
-
-1. Should we prioritize solar+wind first, or attempt all energy types simultaneously?
-2. Is retroactive prediction (pre-2020 train, 2021+ test) sufficient validation for the thesis committee?
-3. Do you have recommendations for cross-region transfer test locations?
-4. Any preferred scope for the NEMS valuation integration?
-
-I welcome any feedback on the research direction. I believe combining foundation model embeddings with configurable factor scoring addresses a genuine gap in the literature and creates a stronger contribution than competing with existing high-resolution detection systems.
-
-Best regards,
-Ziming (Frank) Qi
-Northeastern University, Millennium Fellowship Research
-
 ---
 
-## Appendix B: Detection Phase (Lessons Learned)
+## Appendix: Detection Phase (Lessons Learned)
 
 ### Summary of 29 Detection Experiments
 

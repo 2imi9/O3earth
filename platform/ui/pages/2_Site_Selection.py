@@ -1,0 +1,127 @@
+"""Site Selection — interactive map for picking renewable energy sites."""
+
+import sys
+from pathlib import Path
+_root = str(Path(__file__).resolve().parent.parent.parent)
+if _root not in sys.path:
+    sys.path.insert(0, _root)
+
+import streamlit as st
+from ui.utils.state import init_state, update_location
+from ui.components.sidebar import render_sidebar
+from ui.components.map_widget import render_site_map
+from ui.utils.api_client import get_api_client
+
+init_state()
+render_sidebar()
+
+st.header("Site Selection")
+st.markdown("Click on the map to select a site for analysis. The red marker shows the current selection.")
+
+# ------------------------------------------------------------------
+# Map
+# ------------------------------------------------------------------
+clicked_lat, clicked_lon = render_site_map(
+    center_lat=st.session_state.selected_lat,
+    center_lon=st.session_state.selected_lon,
+    zoom=6,
+    key="site_select_map",
+)
+
+if clicked_lat is not None:
+    update_location(clicked_lat, clicked_lon)
+    st.success(f"Selected: ({clicked_lat:.4f}, {clicked_lon:.4f})")
+
+# Show current coordinates
+st.markdown(
+    f"**Current selection:** {st.session_state.selected_lat:.4f}, "
+    f"{st.session_state.selected_lon:.4f} "
+    f"(State: {st.session_state.selected_state})"
+)
+
+st.divider()
+
+# ------------------------------------------------------------------
+# Quick-analyze buttons
+# ------------------------------------------------------------------
+st.subheader("Analyze This Site")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    if st.button("Run Climate Risk", use_container_width=True):
+        api = get_api_client()
+        with st.spinner("Assessing climate risk..."):
+            result = api.assess_climate_risk(
+                latitude=st.session_state.selected_lat,
+                longitude=st.session_state.selected_lon,
+                elevation=st.session_state.selected_elevation,
+            )
+        if result:
+            st.session_state.last_climate_risk = result
+            st.success(f"Risk Score: {result['risk_score']:.3f}")
+        else:
+            st.error("Climate risk assessment failed.")
+
+with col2:
+    if st.button("Run Detection", use_container_width=True):
+        api = get_api_client()
+        with st.spinner("Running satellite detection..."):
+            result = api.detect(
+                latitude=st.session_state.selected_lat,
+                longitude=st.session_state.selected_lon,
+            )
+        if result:
+            st.session_state.last_detection = result
+            if result["detected"]:
+                st.success(f"Detected: {result['classification']} ({result['detection_confidence']:.1%})")
+            else:
+                st.info("No installation detected at this location.")
+        else:
+            st.error("Detection failed.")
+
+with col3:
+    if st.button("Run Valuation", use_container_width=True):
+        api = get_api_client()
+        with st.spinner("Calculating valuation..."):
+            result = api.value_asset(
+                asset_id="map_selection",
+                asset_type=st.session_state.asset_type,
+                latitude=st.session_state.selected_lat,
+                longitude=st.session_state.selected_lon,
+                state=st.session_state.selected_state,
+                capacity_mw=st.session_state.capacity_mw,
+            )
+        if result:
+            st.session_state.last_valuation = result
+            st.success(f"NPV: ${result['npv_usd']:,.0f}")
+        else:
+            st.error("Valuation failed.")
+
+st.divider()
+
+# ------------------------------------------------------------------
+# State selector
+# ------------------------------------------------------------------
+st.subheader("Site Parameters")
+col_a, col_b, col_c = st.columns(3)
+
+US_STATES = [
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+]
+
+with col_a:
+    idx = US_STATES.index(st.session_state.selected_state) if st.session_state.selected_state in US_STATES else 4
+    st.session_state.selected_state = st.selectbox("State", US_STATES, index=idx)
+
+with col_b:
+    st.session_state.selected_elevation = st.number_input("Elevation (m)", value=st.session_state.selected_elevation, step=10.0)
+
+with col_c:
+    asset_types = ["solar_utility", "solar_distributed", "wind_onshore", "wind_offshore", "hydro", "battery_storage"]
+    idx = asset_types.index(st.session_state.asset_type) if st.session_state.asset_type in asset_types else 0
+    st.session_state.asset_type = st.selectbox("Asset Type", asset_types, index=idx)
