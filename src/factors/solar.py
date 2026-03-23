@@ -53,20 +53,32 @@ class SolarIrradianceFactor(BaseFactor):
               5.0-6.0 -> 0.8, > 6.0 -> 1.0
         """
         ghi = kwargs.get("ghi_kwh_m2_day")
-        if ghi is not None:
-            if ghi <= 2.0:
-                return 0.1
-            elif ghi <= 3.0:
-                return 0.3
-            elif ghi <= 4.0:
-                return 0.5
-            elif ghi <= 5.0:
-                return 0.7
-            elif ghi <= 6.0:
-                return 0.85
+        if ghi is None:
+            # Estimate GHI from latitude (simple solar belt model)
+            abs_lat = abs(lat)
+            if abs_lat <= 25:
+                ghi = 6.0  # Tropics/subtropics
+            elif abs_lat <= 35:
+                ghi = 5.5  # Solar belt
+            elif abs_lat <= 45:
+                ghi = 4.5  # Mid-latitudes
+            elif abs_lat <= 55:
+                ghi = 3.5  # High mid-latitudes
             else:
-                return 1.0
-        return 0.5
+                ghi = 2.5  # High latitudes
+
+        if ghi <= 2.0:
+            return 0.1
+        elif ghi <= 3.0:
+            return 0.3
+        elif ghi <= 4.0:
+            return 0.5
+        elif ghi <= 5.0:
+            return 0.7
+        elif ghi <= 6.0:
+            return 0.85
+        else:
+            return 1.0
 
 
 class CloudCoverageFactor(BaseFactor):

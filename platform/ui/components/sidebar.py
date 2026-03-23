@@ -8,14 +8,14 @@ from ui.utils.state import init_state
 # Preset locations for quick selection
 PRESETS = {
     "Custom": (None, None, ""),
-    "Bakersfield, CA (Solar)": (35.37, -119.02, "CA"),
-    "Amarillo, TX (Wind)": (35.22, -101.83, "TX"),
-    "Topaz Solar Farm, CA": (35.05, -119.96, "CA"),
-    "Alta Wind, CA": (35.07, -118.35, "CA"),
-    "Horse Hollow, TX (Wind)": (32.07, -100.27, "TX"),
-    "Grand Coulee Dam, WA": (47.95, -118.98, "WA"),
-    "Ivanpah, NV (Solar)": (35.56, -115.47, "NV"),
-    "Block Island, RI (Offshore Wind)": (41.17, -71.58, "RI"),
+    "Mojave Desert, CA (Solar)": (35.05, -117.60, "CA"),
+    "Texas Panhandle (Wind)": (35.22, -101.83, "TX"),
+    "Columbia River, WA (Hydro)": (47.95, -118.98, "WA"),
+    "Geysers, CA (Geothermal)": (38.79, -122.77, "CA"),
+    "Sahara, Algeria (Solar)": (32.00, 3.00, ""),
+    "North Sea, UK (Wind)": (54.00, 1.50, ""),
+    "Itaipu, Brazil (Hydro)": (-25.41, -54.59, ""),
+    "Nairobi, Kenya (Solar)": (-1.29, 36.82, ""),
 }
 
 

@@ -50,22 +50,32 @@ class WindSpeedFactor(BaseFactor):
               6-7 -> 0.7, 7-9 -> 0.9, > 9 -> 1.0
         """
         speed = kwargs.get("wind_speed_ms")
-        if speed is not None:
-            if speed < 3.0:
-                return 0.0
-            elif speed < 4.0:
-                return 0.1
-            elif speed < 5.0:
-                return 0.3
-            elif speed < 6.0:
-                return 0.5
-            elif speed < 7.0:
-                return 0.7
-            elif speed < 9.0:
-                return 0.9
+        if speed is None:
+            # Estimate wind from latitude (coastal/plains heuristic)
+            abs_lat = abs(lat)
+            if 35 <= abs_lat <= 55:
+                speed = 7.0  # Westerlies belt
+            elif 25 <= abs_lat < 35:
+                speed = 5.5  # Subtropics
+            elif abs_lat < 25:
+                speed = 4.5  # Tropics (calmer)
             else:
-                return 1.0
-        return 0.5
+                speed = 6.0  # Polar regions
+
+        if speed < 3.0:
+            return 0.0
+        elif speed < 4.0:
+            return 0.1
+        elif speed < 5.0:
+            return 0.3
+        elif speed < 6.0:
+            return 0.5
+        elif speed < 7.0:
+            return 0.7
+        elif speed < 9.0:
+            return 0.9
+        else:
+            return 1.0
 
 
 class WindDirectionConsistencyFactor(BaseFactor):
