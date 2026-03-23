@@ -64,21 +64,24 @@ with col1:
             st.error("Climate risk assessment failed.")
 
 with col2:
-    if st.button("Run Detection", use_container_width=True):
+    if st.button("Score Suitability", use_container_width=True):
         api = get_api_client()
-        with st.spinner("Running satellite detection..."):
+        with st.spinner("Computing suitability score..."):
             result = api.detect(
                 latitude=st.session_state.selected_lat,
                 longitude=st.session_state.selected_lon,
             )
         if result:
             st.session_state.last_detection = result
-            if result["detected"]:
-                st.success(f"Detected: {result['classification']} ({result['detection_confidence']:.1%})")
+            score = result.get("detection_confidence", 0)
+            if score > 0.7:
+                st.success(f"High suitability: {score:.1%}")
+            elif score > 0.4:
+                st.warning(f"Moderate suitability: {score:.1%}")
             else:
-                st.info("No installation detected at this location.")
+                st.info(f"Low suitability: {score:.1%}")
         else:
-            st.error("Detection failed.")
+            st.error("Suitability scoring failed.")
 
 with col3:
     if st.button("Run Valuation", use_container_width=True):

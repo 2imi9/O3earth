@@ -1,0 +1,9 @@
+2026-03-19 23:46:18,983 INFO    MainThread:37780 [wandb_setup.py:_flush():81] Current SDK version is 0.25.1
+2026-03-19 23:46:18,983 INFO    MainThread:37780 [wandb_setup.py:_flush():81] Configure stats pid to 37780
+2026-03-19 23:46:18,983 INFO    MainThread:37780 [wandb_setup.py:_flush():81] Loading settings from environment variables
+2026-03-19 23:46:18,985 INFO    MainThread:37780 [wandb_init.py:setup_run_log_directory():717] Logging user logs to C:\Users\Frank\OneDrive\Desktop\Github\FT_olmoearth\wandb\offline-run-20260319_234618-4oa5a2cp\logs\debug.log
+2026-03-19 23:46:18,985 INFO    MainThread:37780 [wandb_init.py:setup_run_log_directory():718] Logging internal logs to C:\Users\Frank\OneDrive\Desktop\Github\FT_olmoearth\wandb\offline-run-20260319_234618-4oa5a2cp\logs\debug-internal.log
+2026-03-19 23:46:18,992 INFO    MainThread:37780 [wandb_init.py:init():844] calling init triggers
+2026-03-19 23:46:18,992 INFO    MainThread:37780 [wandb_init.py:init():849] wandb.init called with sweep_config: {}
+config: {'test': True, '_wandb': {}}
+2026-03-19 23:46:18,992 INFO    MainThread:37780 [wandb_init.py:init():892] starting backend

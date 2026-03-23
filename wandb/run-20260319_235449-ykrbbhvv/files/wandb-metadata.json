@@ -1,0 +1,40 @@
+{
+  "os":  "Windows-11-10.0.26200-SP0",
+  "python":  "3.12.12",
+  "startedAt":  "2026-03-20T03:54:49.201538Z",
+  "program":  "<python with no main file>",
+  "git":  {
+    "remote":  "https://github.com/YOUR_USERNAME/openenergy-engine.git",
+    "commit":  "8b99bc72889b2c7c767d9ee96a475b562be816fc"
+  },
+  "email":  "frankziming26@outlook.com",
+  "root":  "C:\\Users\\Frank\\OneDrive\\Desktop\\Github\\FT_olmoearth",
+  "host":  "Ziming",
+  "username":  "Frank",
+  "executable":  "C:\\Users\\Frank\\OneDrive\\Desktop\\Github\\FT_olmoearth\\.venv\\Scripts\\python.exe",
+  "cpu_count":  24,
+  "cpu_count_logical":  24,
+  "gpu":  "NVIDIA GeForce RTX 5090 Laptop GPU",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "2019998822400",
+      "used":  "1752472387584"
+    }
+  },
+  "memory":  {
+    "total":  "68137205760"
+  },
+  "cpu":  {
+    "count":  24,
+    "countLogical":  24
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "memoryTotal":  "25651314688",
+      "cudaCores":  10496
+    }
+  ],
+  "cudaVersion":  "13.0"
+}

@@ -1,0 +1,32 @@
+2026-03-19 23:54:49,188 INFO    MainThread:41172 [wandb_setup.py:_flush():79] Current SDK version is 0.18.7
+2026-03-19 23:54:49,188 INFO    MainThread:41172 [wandb_setup.py:_flush():79] Configure stats pid to 41172
+2026-03-19 23:54:49,188 INFO    MainThread:41172 [wandb_setup.py:_flush():79] Loading settings from C:\Users\Frank\.config\wandb\settings
+2026-03-19 23:54:49,188 INFO    MainThread:41172 [wandb_setup.py:_flush():79] Loading settings from C:\Users\Frank\OneDrive\Desktop\Github\FT_olmoearth\wandb\settings
+2026-03-19 23:54:49,188 INFO    MainThread:41172 [wandb_setup.py:_flush():79] Loading settings from environment variables: {'api_key': '***REDACTED***'}
+2026-03-19 23:54:49,188 INFO    MainThread:41172 [wandb_setup.py:_flush():79] Applying setup settings: {'mode': None, '_disable_service': None}
+2026-03-19 23:54:49,196 INFO    MainThread:41172 [wandb_setup.py:_flush():79] Inferring run settings from compute environment: {'program': '<python with no main file>'}
+2026-03-19 23:54:49,196 INFO    MainThread:41172 [wandb_setup.py:_flush():79] Applying login settings: {}
+2026-03-19 23:54:49,196 INFO    MainThread:41172 [wandb_init.py:_log_setup():533] Logging user logs to C:\Users\Frank\OneDrive\Desktop\Github\FT_olmoearth\wandb\run-20260319_235449-ykrbbhvv\logs\debug.log
+2026-03-19 23:54:49,196 INFO    MainThread:41172 [wandb_init.py:_log_setup():534] Logging internal logs to C:\Users\Frank\OneDrive\Desktop\Github\FT_olmoearth\wandb\run-20260319_235449-ykrbbhvv\logs\debug-internal.log
+2026-03-19 23:54:49,196 INFO    MainThread:41172 [wandb_init.py:init():619] calling init triggers
+2026-03-19 23:54:49,196 INFO    MainThread:41172 [wandb_init.py:init():626] wandb.init called with sweep_config: {}
+config: {'test': True}
+2026-03-19 23:54:49,196 INFO    MainThread:41172 [wandb_init.py:init():669] starting backend
+2026-03-19 23:54:49,196 INFO    MainThread:41172 [wandb_init.py:init():673] sending inform_init request
+2026-03-19 23:54:49,200 INFO    MainThread:41172 [backend.py:_multiprocessing_setup():104] multiprocessing start_methods=spawn, using: spawn
+2026-03-19 23:54:49,201 INFO    MainThread:41172 [wandb_init.py:init():686] backend started and connected
+2026-03-19 23:54:49,208 INFO    MainThread:41172 [wandb_init.py:init():781] updated telemetry
+2026-03-19 23:54:49,245 INFO    MainThread:41172 [wandb_init.py:init():814] communicating run to backend with 90.0 second timeout
+2026-03-19 23:54:50,566 INFO    MainThread:41172 [wandb_init.py:init():867] starting run threads in backend
+2026-03-19 23:54:51,634 INFO    MainThread:41172 [wandb_run.py:_console_start():2456] atexit reg
+2026-03-19 23:54:51,634 INFO    MainThread:41172 [wandb_run.py:_redirect():2305] redirect: wrap_raw
+2026-03-19 23:54:51,634 INFO    MainThread:41172 [wandb_run.py:_redirect():2370] Wrapping output streams.
+2026-03-19 23:54:51,634 INFO    MainThread:41172 [wandb_run.py:_redirect():2395] Redirects installed.
+2026-03-19 23:54:51,640 INFO    MainThread:41172 [wandb_init.py:init():911] run started, returning control to user process
+2026-03-19 23:54:51,640 INFO    MainThread:41172 [wandb_run.py:_finish():2155] finishing run 2imi9-northeastern-university/openenergyengine/ykrbbhvv
+2026-03-19 23:54:51,640 INFO    MainThread:41172 [wandb_run.py:_atexit_cleanup():2420] got exitcode: 0
+2026-03-19 23:54:51,640 INFO    MainThread:41172 [wandb_run.py:_restore():2402] restore
+2026-03-19 23:54:51,641 INFO    MainThread:41172 [wandb_run.py:_restore():2408] restore done
+2026-03-19 23:54:54,095 INFO    MainThread:41172 [wandb_run.py:_footer_history_summary_info():3960] rendering history
+2026-03-19 23:54:54,096 INFO    MainThread:41172 [wandb_run.py:_footer_history_summary_info():3992] rendering summary
+2026-03-19 23:54:54,100 INFO    MainThread:41172 [wandb_run.py:_footer_sync_info():3921] logging synced files

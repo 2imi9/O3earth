@@ -65,14 +65,14 @@ with col_right:
 st.divider()
 
 # ------------------------------------------------------------------
-# Last detection
+# Last suitability
 # ------------------------------------------------------------------
-st.markdown("**Last Detection**")
+st.markdown("**Last Suitability Score**")
 if st.session_state.last_detection:
     d = st.session_state.last_detection
     dcol1, dcol2, dcol3 = st.columns(3)
-    dcol1.metric("Detected", "Yes" if d["detected"] else "No")
-    dcol2.metric("Classification", d["classification"])
-    dcol3.metric("Capacity", f"{d['estimated_capacity_mw']:.1f} MW")
+    dcol1.metric("Score", f"{d.get('detection_confidence', 0):.1%}")
+    dcol2.metric("Type", d.get("classification", "N/A"))
+    dcol3.metric("Location", f"{d.get('latitude', 'N/A')}")
 else:
-    st.info("No detection run yet. Go to Detection to start.")
+    st.info("No suitability analysis yet. Go to Suitability Scoring to start.")

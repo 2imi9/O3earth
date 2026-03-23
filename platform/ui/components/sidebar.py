@@ -23,8 +23,8 @@ def render_sidebar():
     """Render the shared sidebar with location picker and status."""
     init_state()
 
-    st.sidebar.title("OpenEnergy Engine")
-    st.sidebar.caption("Renewable Energy Verification & Valuation")
+    st.sidebar.title("O3 EartH")
+    st.sidebar.caption("Geospatial Site Suitability Assessment")
     st.sidebar.divider()
 
     # API status
@@ -71,4 +71,4 @@ def render_sidebar():
     )
 
     st.sidebar.divider()
-    st.sidebar.caption("Part of the Millennium Fellowship Research at Northeastern University")
+    st.sidebar.caption("Northeastern University")
