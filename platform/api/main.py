@@ -1,9 +1,19 @@
-"""FastAPI application for OpenEnergy Engine."""
+"""FastAPI application for O3 EartH."""
 
 import logging
+import sys
 import threading
 from contextlib import asynccontextmanager
 from pathlib import Path
+
+# Add project root to sys.path so `src.*` imports work
+_project_root = str(Path(__file__).resolve().parent.parent.parent)
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
+# Add platform/ to sys.path so `api.*` imports work
+_platform_root = str(Path(__file__).resolve().parent.parent)
+if _platform_root not in sys.path:
+    sys.path.insert(0, _platform_root)
 
 from dotenv import load_dotenv
 
