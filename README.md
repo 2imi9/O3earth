@@ -4,8 +4,6 @@
 
 O3 EartH uses frozen [OlmoEarth](https://github.com/allenai/olmoearth_pretrain) foundation model embeddings with lightweight classifiers to assess infrastructure site suitability across four energy types and six continents.
 
-**O3** represents the three pillars of sustainability: Environmental, Social, and Economic.
-
 > Ziming Qi | Northeastern University
 
 ## Results
