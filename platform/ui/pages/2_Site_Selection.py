@@ -86,22 +86,7 @@ with col2:
             st.error("Suitability scoring failed.")
 
 with col3:
-    if st.button("Run Valuation", use_container_width=True):
-        api = get_api_client()
-        with st.spinner("Calculating valuation..."):
-            result = api.value_asset(
-                asset_id="map_selection",
-                asset_type=st.session_state.asset_type,
-                latitude=st.session_state.selected_lat,
-                longitude=st.session_state.selected_lon,
-                state=st.session_state.selected_state,
-                capacity_mw=st.session_state.capacity_mw,
-            )
-        if result:
-            st.session_state.last_valuation = result
-            st.success(f"NPV: ${result['npv_usd']:,.0f}")
-        else:
-            st.error("Valuation failed.")
+    st.page_link("pages/0_AI_Chat.py", label="Ask AI about this site", icon="💬", use_container_width=True)
 
 st.divider()
 
