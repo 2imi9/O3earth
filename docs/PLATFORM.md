@@ -1,7 +1,8 @@
+[![O3 EartH Demo](https://img.youtube.com/vi/vaiKRWlHqPc/maxresdefault.jpg)](https://www.youtube.com/watch?v=vaiKRWlHqPc)
+
 # Platform Architecture
 
 ## Overview
-
 O3 EartH runs as a web application with a FastAPI backend and Streamlit frontend. No GPU required.
 
 ## Pages
@@ -24,7 +25,6 @@ O3 EartH runs as a web application with a FastAPI backend and Streamlit frontend
 - Resource projections (GHI, wind speed) under warming scenarios
 
 ## MCP Tools
-
 Model Context Protocol tools for programmatic access:
 
 | Tool | Description |
