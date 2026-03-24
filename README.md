@@ -2,119 +2,92 @@
 
 **Geospatial Site Suitability Assessment Using Foundation Model Embeddings**
 
-O3 EartH uses frozen [OlmoEarth](https://github.com/allenai/olmoearth_pretrain) foundation model embeddings with lightweight classifiers to assess infrastructure site suitability across four energy types and six continents.
+O3 EartH (Environmental, Social, Economic) uses frozen [OlmoEarth](https://github.com/allenai/olmoearth_pretrain) embeddings with lightweight classifiers to score infrastructure site suitability — no GPU needed at inference.
 
 > Ziming Qi | Northeastern University
-
-## Results
-
-| Experiment | AUC-ROC |
-|------------|---------|
-| Geographic baseline (lat/lon) | 0.852 |
-| OlmoEarth embeddings (768-dim) | 0.913 |
-| **Combined (embeddings + geo)** | **0.927** |
-| Spatial CV (63 countries) | 0.883 |
-| Temporal (pre-2020 train, post-2020 test) | 0.952 |
-
-### Per Energy Type (Combined, XGBoost)
-
-| Type | AUC | Embedding Contribution |
-|------|-----|----------------------|
-| Solar | 0.975 | +6.2% over geo baseline |
-| Wind | 0.924 | Policy-driven, geo stronger |
-| Hydro | 0.922 | +10.1% over geo baseline |
-| Geothermal | 0.948 | Subsurface-driven, geo stronger |
-
-### Global Transfer
-
-| Region | AUC |
-|--------|-----|
-| South America | 0.943 |
-| Oceania | 0.923 |
-| Africa | 0.919 |
-| Europe | 0.912 |
-| North America | 0.888 |
-| Asia | 0.866 |
 
 ## How It Works
 
 ```
-Sentinel-2 Image (12 bands, 10m)
-    |
-    v
-OlmoEarth BASE (97M params, frozen)
-    |
-    v
-768-dim Embedding (landscape features)
-    |
-    v
-XGBoost Classifier --> Suitability Score (0-1)
+Sentinel-2 (12 bands) → OlmoEarth (frozen, 97M params) → 768-dim embedding → XGBoost → Score
 ```
 
-1. **OlmoEarth** extracts 768-dimensional landscape representations from Sentinel-2 satellite imagery
-2. **XGBoost** classifies patches as suitable/unsuitable for each energy type
-3. **Factor Engine** provides configurable scoring across 19 factors (land cover, terrain, grid proximity, resource data, environmental constraints)
+- **Extract once**: OlmoEarth converts satellite patches into 768-dim landscape fingerprints
+- **Score instantly**: XGBoost classifies on CPU in milliseconds
+- **Compare methods**: Factor Engine (real-time APIs) vs ML Model (satellite embeddings)
 
-## Dataset
+## Key Result
 
-- **8,000 embeddings** extracted across solar, wind, hydro, geothermal
-- **321,614 global energy locations** from EIA API + OSM Overpass
-- **100+ countries** represented
-- Available on HuggingFace: [2imi9/O3earth](https://huggingface.co/datasets/2imi9/O3earth)
+| Method | AUC |
+|--------|-----|
+| Geography only (lat/lon) | 0.579 |
+| OlmoEarth embeddings | 0.902 |
+| **Spatial CV (leave-one-country-out)** | **0.867** |
+
+8,000 samples across 100+ countries, 4 energy types. Details in [RESULTS.md](docs/RESULTS.md).
+
+## Platform
+
+Web application with three components:
+
+| Page | What it does |
+|------|-------------|
+| **AI Chat** | NVIDIA NIM LLM with full system knowledge |
+| **Site Selection** | Map → pick location → Factor Engine + ML scores |
+| **Climate Risk** | NASA POWER data + IPCC AR6 SSP projections |
+
+MCP tools available for programmatic access. Details in [PLATFORM.md](docs/PLATFORM.md).
+
+## Data Sources
+
+| Source | Data | Auth |
+|--------|------|------|
+| NASA POWER | Solar GHI, wind speed, temperature, cloud, precipitation | None |
+| Open-Elevation | Terrain slope and gradient | None |
+| Open-Meteo Flood | River discharge | None |
+| USGS Earthquake | Seismic activity | None |
+| EIA API v2 | US power plant data | API key |
+| Planetary Computer | Sentinel-2 imagery | None |
+
+## Quick Start
+
+```bash
+# Clone and install
+git clone https://github.com/2imi9/O3earth.git
+cd O3earth
+pip install -r requirements.txt
+
+# Run the platform (no GPU needed)
+cd platform
+uvicorn api.main:app --port 8000 &
+streamlit run ui/app.py --server.port 8501
+```
+
+Dataset and pre-trained models on HuggingFace: [2imi9/O3earth](https://huggingface.co/datasets/2imi9/O3earth)
 
 ## Project Structure
 
 ```
 O3earth/
-├── THESIS.md                 # Full thesis document
 ├── src/
-│   ├── factors/              # 19 configurable scoring factors
-│   │   ├── solar.py          # GHI, cloud coverage, temperature
-│   │   ├── wind.py           # Wind speed, direction, roughness
-│   │   ├── hydro.py          # Water flow, elevation drop, watershed
-│   │   ├── geothermal.py     # Heat flow, fault proximity, seismic
-│   │   ├── infrastructure.py # Grid, roads, flood risk, protected areas
-│   │   └── land.py           # Land cover, slope, elevation
-│   ├── scoring/              # Suitability scoring engine
-│   └── data_clients/         # EIA API + Planetary Computer clients
-├── scripts/
-│   ├── extract_embeddings.py # Sentinel-2 → OlmoEarth → embeddings
-│   ├── train_suitability.py  # XGBoost/MLP training + ablation
-│   ├── build_suitability_dataset.py
-│   └── overnight_automation.py
-├── data/                     # Parquet datasets
-├── results/                  # Training results + predictions
-└── archive/                  # Detection phase experiments (29 runs)
+│   ├── factors/           # 19 configurable scoring factors
+│   ├── scoring/           # Suitability engine
+│   ├── data_clients/      # Real-time API clients
+│   ├── mcp/               # MCP tools + handlers
+│   └── llm/               # NVIDIA NIM + vLLM
+├── platform/
+│   ├── api/               # FastAPI backend
+│   └── ui/                # Streamlit frontend
+├── scripts/               # Data pipeline + training
+├── data/                  # Datasets + embeddings
+└── results/               # Trained models + metrics
 ```
 
-## Quick Start
+## References
 
-```bash
-# Install dependencies
-pip install numpy pandas scikit-learn xgboost stackstac rioxarray
-
-# Install OlmoEarth
-pip install git+https://github.com/allenai/olmoearth_pretrain.git
-
-# Extract embeddings (requires GPU + internet for Sentinel-2)
-python scripts/extract_embeddings.py \
-    --dataset data/suitability_dataset_v2_shuffled.parquet \
-    --output-dir data/embeddings \
-    --model-size BASE --resume
-
-# Train classifier
-python scripts/train_suitability.py \
-    --embeddings data/embeddings/embeddings.npy \
-    --metadata data/embeddings/embeddings_meta.csv \
-    --output-dir results/suitability \
-    --cv-folds 5
-```
-
-## Key References
-
-- **OlmoEarth**: Allen Institute geospatial foundation model ([GitHub](https://github.com/allenai/olmoearth_pretrain))
-- **TIML** (Tseng et al., 2022): Task-Informed Meta-Learning for Agriculture — methodological precedent
-- **SatCLIP** (Klemmer et al., 2023): Location embeddings from satellite imagery
+- [OlmoEarth](https://github.com/allenai/olmoearth_pretrain) — Allen Institute geospatial foundation model
+- [TIML](https://arxiv.org/abs/2209.06277) (Tseng et al.) — methodological precedent for embedding + classifier approach
+- [SatCLIP](https://arxiv.org/abs/2311.17179) (Klemmer et al.) — location embeddings from satellite imagery
 
 ## License
 
