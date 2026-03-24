@@ -31,13 +31,18 @@ else:
 if "chat_messages" not in st.session_state:
     st.session_state.chat_messages = []
 
+if "pending_response" not in st.session_state:
+    st.session_state.pending_response = False
+
 if not st.session_state.chat_messages:
     col1, col2 = st.columns(2)
     if col1.button("What can O3 EartH do?", use_container_width=True):
         st.session_state.chat_messages.append({"role": "user", "content": "What can O3 EartH do?"})
+        st.session_state.pending_response = True
         st.rerun()
     if col2.button("How does OlmoEarth scoring work?", use_container_width=True):
         st.session_state.chat_messages.append({"role": "user", "content": "How does OlmoEarth scoring work?"})
+        st.session_state.pending_response = True
         st.rerun()
 
 # ------------------------------------------------------------------
@@ -47,10 +52,17 @@ for msg in st.session_state.chat_messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-if prompt := st.chat_input("Ask about site suitability, energy data, climate risk..."):
+# Handle new input from chat box
+prompt = st.chat_input("Ask about site suitability, energy data, climate risk...")
+if prompt:
     st.session_state.chat_messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
+    st.session_state.pending_response = True
+
+# Check if we need to generate a response (from suggestion button or chat input)
+needs_response = st.session_state.pending_response and st.session_state.chat_messages and st.session_state.chat_messages[-1]["role"] == "user"
+
+if needs_response:
+    st.session_state.pending_response = False
 
     # Build context
     context_parts = []
