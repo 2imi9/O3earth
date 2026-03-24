@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this software or dataset, please cite it as below."
+type: software
+title: "O3 EartH: Geospatial Site Suitability Assessment Using Foundation Model Embeddings"
+authors:
+  - family-names: Qi
+    given-names: Ziming
+    affiliation: Northeastern University
+repository-code: "https://github.com/2imi9/O3earth"
+url: "https://huggingface.co/datasets/2imi9/O3earth"
+license: MIT
+date-released: "2026-03-24"
+keywords:
+  - renewable-energy
+  - geospatial
+  - foundation-model
+  - olmoearth
+  - site-suitability
+  - satellite-imagery
+  - sentinel-2
+abstract: >-
+  O3 EartH is a geospatial site suitability assessment system that uses
+  frozen OlmoEarth foundation model embeddings with lightweight classifiers
+  to evaluate locations for renewable energy infrastructure. Trained on
+  8,000 globally distributed samples across 212 countries, it achieves
+  AUC 0.911 under 5-fold CV and 0.867 under leave-one-country-out
+  spatial cross-validation.
