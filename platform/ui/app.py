@@ -44,7 +44,7 @@ st.markdown(
 
 st.divider()
 
-col1, col2, col3 = st.columns(3)
+col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("AI Chat")
@@ -53,10 +53,5 @@ with col1:
 
 with col2:
     st.subheader("Site Selection")
-    st.write("Pick a location on the map and score suitability for solar and wind energy.")
+    st.write("Pick a location, choose solar or wind, and compare scores across sites.")
     st.page_link("pages/2_Site_Selection.py", label="Select & Score", icon="🗺️")
-
-with col3:
-    st.subheader("Climate Risk")
-    st.write("Assess climate risk under SSP scenarios.")
-    st.page_link("pages/3_Climate_Risk.py", label="Assess Risk", icon="🌡️")
