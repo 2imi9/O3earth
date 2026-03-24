@@ -2,7 +2,7 @@
 
 **Geospatial Site Suitability Assessment Using Foundation Model Embeddings**
 
-O3 EartH (Environmental, Social, Economic) uses frozen [OlmoEarth](https://github.com/allenai/olmoearth_pretrain) embeddings with lightweight classifiers to score infrastructure site suitability — no GPU needed at inference.
+O3 EartH uses frozen [OlmoEarth](https://github.com/allenai/olmoearth_pretrain) embeddings with lightweight classifiers to score infrastructure site suitability — no GPU needed at inference.
 
 > Ziming Qi | Northeastern University
 
