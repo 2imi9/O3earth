@@ -24,7 +24,7 @@ Sentinel-2 (12 bands) → OlmoEarth (frozen, 97M params) → 768-dim embedding �
 | OlmoEarth embeddings | 0.902 |
 | **Spatial CV (leave-one-country-out)** | **0.867** |
 
-8,000 samples across 100+ countries, 4 energy types. Details in [RESULTS.md](docs/RESULTS.md).
+8,000 samples across 212 countries, 4 energy types. Full validation methodology in **[VALIDATION.md](docs/VALIDATION.md)** — includes spatial CV, temporal validation, overfitting diagnosis, and reproducibility instructions.
 
 ## Platform
 
