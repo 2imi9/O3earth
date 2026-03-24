@@ -102,12 +102,15 @@ class ToolHandlers:
     def score_suitability(self, input_data: SuitabilityInput) -> SuitabilityOutput:
         """Score a location for renewable energy suitability.
 
-        Uses both the configurable factor engine and trained ML model.
+        Uses both the configurable factor engine (with real-time API data)
+        and trained ML model (OlmoEarth embeddings + XGBoost).
         """
         from src.scoring.engine import SuitabilityEngine
+        from src.data_clients.realtime import fetch_all
 
+        real_data = fetch_all(input_data.latitude, input_data.longitude)
         engine = SuitabilityEngine(input_data.energy_type)
-        result = engine.score(input_data.latitude, input_data.longitude)
+        result = engine.score(input_data.latitude, input_data.longitude, **real_data)
         factor_score = result.overall_score
 
         # Try ML model
@@ -183,37 +186,41 @@ class ToolHandlers:
     # -------------------------------------------------------------------------
 
     def assess_climate_risk(self, input_data: ClimateRiskInput) -> ClimateRiskOutput:
-        """Assess climate risk for a location."""
-        if self._climate_model is None:
-            from src.models import create_climate_model
-            self._climate_model = create_climate_model()
-
-        from src.models import ClimateScenario
-        scenario_map = {
-            "SSP126": ClimateScenario.SSP126,
-            "SSP245": ClimateScenario.SSP245,
-            "SSP370": ClimateScenario.SSP370,
-            "SSP585": ClimateScenario.SSP585,
-        }
-        scenario = scenario_map.get(input_data.scenario.upper(), ClimateScenario.SSP245)
-
-        risk = self._climate_model.assess_risk(
-            latitude=input_data.latitude,
-            longitude=input_data.longitude,
-            elevation=input_data.elevation,
-            asset_type=input_data.asset_type,
-            scenario=scenario,
-            target_year=input_data.target_year,
-        )
-
-        return ClimateRiskOutput(
-            risk_score=risk.risk_score,
-            solar_ghi_p50=risk.solar_ghi_kwh_m2_year["p50"],
-            wind_speed_p50=risk.wind_speed_m_s["p50"],
-            extreme_event_probs=risk.extreme_event_probs,
-            temperature_change_c=risk.temperature_change_c,
-            precipitation_change_pct=risk.precipitation_change_pct,
-        )
+        """Assess climate risk using real NASA POWER data + IPCC projections."""
+        import requests
+        try:
+            resp = requests.post(
+                "http://localhost:8000/api/climate-risk",
+                json={
+                    "latitude": input_data.latitude,
+                    "longitude": input_data.longitude,
+                    "elevation": input_data.elevation,
+                    "asset_type": input_data.asset_type,
+                    "scenario": input_data.scenario,
+                    "target_year": input_data.target_year,
+                },
+                timeout=15,
+            )
+            resp.raise_for_status()
+            r = resp.json()
+            return ClimateRiskOutput(
+                risk_score=r["risk_score"],
+                solar_ghi_p50=r["solar_ghi_kwh_m2_year"]["p50"],
+                wind_speed_p50=r["wind_speed_m_s"]["p50"],
+                extreme_event_probs=r["extreme_event_probs"],
+                temperature_change_c=r["temperature_change_c"],
+                precipitation_change_pct=r["precipitation_change_pct"],
+            )
+        except Exception as e:
+            logger.error(f"Climate risk API call failed: {e}")
+            return ClimateRiskOutput(
+                risk_score=0.0,
+                solar_ghi_p50=0.0,
+                wind_speed_p50=0.0,
+                extreme_event_probs={},
+                temperature_change_c=0.0,
+                precipitation_change_pct=0.0,
+            )
 
     # -------------------------------------------------------------------------
     # EIA Tools
