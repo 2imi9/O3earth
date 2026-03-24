@@ -32,20 +32,17 @@ if "chat_messages" not in st.session_state:
     st.session_state.chat_messages = []
 
 if not st.session_state.chat_messages:
-    st.markdown("**Try asking:**")
-    suggestions = [
-        "What makes a good solar farm location?",
-        "Compare solar potential in Sahara vs Northern Europe",
-        "What climate risks affect wind farms?",
-        "Explain how OlmoEarth embeddings work for site scoring",
-    ]
-    cols = st.columns(2)
-    for i, suggestion in enumerate(suggestions):
-        if cols[i % 2].button(suggestion, use_container_width=True, key=f"suggest_{i}"):
-            st.session_state.chat_messages.append({"role": "user", "content": suggestion})
-            st.rerun()
-    st.divider()
+    col1, col2 = st.columns(2)
+    if col1.button("What can O3 EartH do?", use_container_width=True):
+        st.session_state.chat_messages.append({"role": "user", "content": "What can O3 EartH do?"})
+        st.rerun()
+    if col2.button("How does OlmoEarth scoring work?", use_container_width=True):
+        st.session_state.chat_messages.append({"role": "user", "content": "How does OlmoEarth scoring work?"})
+        st.rerun()
 
+# ------------------------------------------------------------------
+# Chat
+# ------------------------------------------------------------------
 for msg in st.session_state.chat_messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
@@ -55,7 +52,7 @@ if prompt := st.chat_input("Ask about site suitability, energy data, climate ris
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Build context from recent analyses
+    # Build context
     context_parts = []
     if st.session_state.get("last_score"):
         s = st.session_state.last_score
@@ -70,12 +67,30 @@ if prompt := st.chat_input("Ask about site suitability, energy data, climate ris
         context_parts.append(f"Recent climate risk: score={r['risk_score']:.3f}")
 
     api_messages = []
-    system_msg = (
-        "You are an AI assistant for O3 EartH, a geospatial site suitability "
-        "assessment system for renewable energy infrastructure. You help users "
-        "understand suitability scores, climate risks, and energy data. "
-        "Be concise and specific."
-    )
+    system_msg = """You are the AI assistant for O3 EartH — a geospatial site suitability assessment system for renewable energy infrastructure.
+
+About O3 EartH:
+- O3 stands for the three pillars of sustainability: Environmental, Social, Economic
+- Built as thesis research at Northeastern University
+
+System Architecture:
+- Factor Engine: Rule-based scoring using real-time data from NASA POWER (solar irradiance, wind speed, temperature, cloud cover), Open-Elevation (terrain slope), Open-Meteo Flood (river discharge), and USGS Earthquake (seismic activity)
+- OlmoEarth ML: Allen Institute's geospatial foundation model (97M params) extracts 768-dim embeddings from Sentinel-2 satellite imagery. XGBoost classifier trained on 8,000 globally distributed samples scores how much a location resembles existing energy infrastructure sites. Spatial cross-validation AUC: 0.867.
+- Climate Risk: NASA POWER current data + IPCC AR6 SSP scenario projections (SSP126 through SSP585)
+- LLM Chat: NVIDIA NIM for natural language interaction
+- EIA Data: US Energy Information Administration API for plant data
+
+MCP (Model Context Protocol) Tools:
+- score_suitability: Score any lat/lon for solar or wind suitability (returns factor engine score + ML score)
+- assess_climate_risk: Climate risk assessment with SSP scenario projections
+- query_eia: Query US energy plant database
+- analyze: LLM-powered analysis of results
+- generate_report: Create formatted reports from analysis data
+
+Key research finding: OlmoEarth embeddings improve suitability prediction from AUC 0.579 (geography only) to 0.902 (with embeddings). Under spatial cross-validation (leave-one-country-out), AUC is 0.867 — demonstrating genuine generalization.
+
+Be concise and specific. When users ask about the system, explain using the architecture above."""
+
     if context_parts:
         system_msg += "\n\nUser's recent analyses:\n" + "\n".join(context_parts)
     api_messages.append({"role": "system", "content": system_msg})
@@ -98,7 +113,7 @@ if prompt := st.chat_input("Ask about site suitability, energy data, climate ris
         else:
             st.error("Failed to get a response.")
 
-# Clear chat button at bottom
+# Clear chat
 if st.session_state.chat_messages:
     if st.button("Clear Chat", use_container_width=True):
         st.session_state.chat_messages = []
