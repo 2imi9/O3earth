@@ -47,8 +47,8 @@ with col1:
     if st.button("Score Suitability", use_container_width=True, type="primary"):
         api = get_api_client()
         results = {}
-        with st.spinner("Scoring all energy types..."):
-            for etype in ["solar", "wind", "hydro", "geothermal"]:
+        with st.spinner("Scoring energy types..."):
+            for etype in ["solar", "wind", "hydro"]:
                 r = api.score_suitability(
                     latitude=st.session_state.selected_lat,
                     longitude=st.session_state.selected_lon,
@@ -81,11 +81,11 @@ if st.session_state.get("last_suitability_all"):
 
     st.subheader(f"Best: {best_type.title()} ({best_score:.0%})")
 
-    # Show all 4 types
-    cols = st.columns(4)
-    icons = {"solar": "☀️", "wind": "💨", "hydro": "💧", "geothermal": "🌋"}
+    # Show 3 types (geothermal excluded — insufficient real-time data for demo)
+    cols = st.columns(3)
+    icons = {"solar": "☀️", "wind": "💨", "hydro": "💧"}
 
-    for i, etype in enumerate(["solar", "wind", "hydro", "geothermal"]):
+    for i, etype in enumerate(["solar", "wind", "hydro"]):
         with cols[i]:
             if etype in results:
                 score = results[etype].get("combined_score", 0)

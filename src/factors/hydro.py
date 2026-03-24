@@ -171,8 +171,23 @@ class WatershedHealthFactor(BaseFactor):
             if ndvi >= 0.6:
                 return 1.0
             elif ndvi >= 0.3:
-                # Linear interpolation 0.3->0.4, 0.6->1.0
                 return 0.4 + (ndvi - 0.3) / 0.3 * 0.6
             else:
                 return 0.2
+
+        # Fallback: use precipitation as proxy for watershed health
+        # Higher precipitation = more vegetation = healthier watershed
+        precip = kwargs.get("precipitation_mm_day")
+        if precip is not None:
+            if precip >= 5.0:
+                return 0.95  # Tropical/wet — healthy watershed
+            elif precip >= 3.0:
+                return 0.8
+            elif precip >= 1.5:
+                return 0.6
+            elif precip >= 0.5:
+                return 0.4
+            else:
+                return 0.2  # Arid — poor watershed
+
         return 0.5
