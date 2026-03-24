@@ -8,14 +8,16 @@ from ui.utils.state import init_state
 # Preset locations for quick selection
 PRESETS = {
     "Custom": (None, None, ""),
-    "Alabama, US (Solar)": (30.84, -87.34, "AL"),
-    "Kansas, US (Wind)": (37.55, -98.24, "KS"),
-    "Morocco (Solar)": (34.30, -5.66, ""),
-    "Spain (Solar)": (42.53, -7.54, ""),
-    "Brazil (Solar)": (-21.46, -42.70, ""),
-    "Australia (Solar)": (-12.42, 130.89, ""),
-    "Patagonia (Wind)": (-46.60, -67.62, ""),
-    "China (Wind)": (26.95, 104.48, ""),
+    # Known energy sites (should score HIGH on ML)
+    "Alabama, US — Solar Farm": (30.84, -87.34, "AL"),
+    "Kansas, US — Wind Farm": (37.55, -98.24, "KS"),
+    "Morocco — Solar Site": (34.30, -5.66, ""),
+    "Spain — Solar Site": (42.53, -7.54, ""),
+    # Remote/unsuitable areas (should score LOW on ML)
+    "Siberia, Russia — Remote": (59.38, 138.72, ""),
+    "Amazon, Brazil — Rainforest": (-2.81, -64.79, ""),
+    "Northern Canada — Wilderness": (64.56, -126.03, ""),
+    "Alaska, US — Remote": (55.00, -134.72, ""),
 }
 
 
