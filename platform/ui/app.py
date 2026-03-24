@@ -53,7 +53,7 @@ with col1:
 
 with col2:
     st.subheader("Site Selection")
-    st.write("Pick a location on the map and score suitability across solar, wind, hydro, and geothermal.")
+    st.write("Pick a location on the map and score suitability for solar, wind, and hydro energy.")
     st.page_link("pages/2_Site_Selection.py", label="Select & Score", icon="🗺️")
 
 with col3:
