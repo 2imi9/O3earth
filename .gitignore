@@ -1,3 +1,6 @@
+# Wandb
+wandb/
+
 # Virtual environment
 .venv/
 venv/
@@ -50,3 +53,4 @@ data_sources/
 CLAUDE.md
 data/osm_energy_polygons.geojson
 *.geojson
+docs/demo.mp4
