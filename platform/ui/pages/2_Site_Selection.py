@@ -98,18 +98,32 @@ if st.session_state.get("last_suitability_all"):
             else:
                 st.metric(f"{icons.get(etype, '')} {etype.title()}", "N/A")
 
-    # Factor detail for best type
-    best_result = results[best_type]
-    factors = best_result.get("factors", {})
-    if factors:
-        with st.expander(f"{best_type.title()} factor breakdown"):
-            active = {k: v for k, v in factors.items() if v != 0.5}
-            default = {k: v for k, v in factors.items() if v == 0.5}
+    # Factor breakdown for each type
+    st.divider()
+    st.subheader("Factor Breakdown")
 
-            if active:
-                fcols = st.columns(min(len(active), 4))
-                for j, (name, value) in enumerate(active.items()):
+    for etype in ["solar", "wind", "hydro"]:
+        if etype not in results:
+            continue
+        r = results[etype]
+        factors = r.get("factors", {})
+        data_sources = r.get("data_sources", {})
+        if not factors:
+            continue
+
+        with st.expander(f"{icons.get(etype, '')} {etype.title()} — {r.get('combined_score', 0):.0%}", expanded=(etype == best_type)):
+            real = {k: v for k, v in factors.items() if v != 0.5}
+            estimated = {k: v for k, v in factors.items() if v == 0.5}
+
+            if real:
+                fcols = st.columns(min(len(real), 4))
+                for j, (name, value) in enumerate(real.items()):
                     fcols[j % len(fcols)].metric(name, f"{value:.0%}")
 
-            if default:
-                st.caption(f"{len(default)} factors pending data connection")
+            if estimated:
+                st.caption(f"⚠️ {len(estimated)} factors estimated (no real-time data): {', '.join(estimated.keys())}")
+
+            if data_sources:
+                with st.expander("Data sources"):
+                    for key, info in data_sources.items():
+                        st.text(f"{key}: {info['value']} ({info['source']})")
