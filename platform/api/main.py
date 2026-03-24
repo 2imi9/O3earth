@@ -92,9 +92,8 @@ app.include_router(llm.router, prefix="/api", tags=["llm"])
 async def health():
     """Check API health and module availability."""
     modules = {
-        "detection": True,
+        "suitability": True,
         "climate": True,
-        "valuation": True,
         "eia": False,
         "satellite": False,
         "llm": False,
