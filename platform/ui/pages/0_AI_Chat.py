@@ -26,10 +26,25 @@ else:
     st.warning("No LLM available. Add `NVIDIA_API_KEY` to `.env`")
 
 # ------------------------------------------------------------------
-# Chat interface
+# Suggested prompts (show only when chat is empty)
 # ------------------------------------------------------------------
 if "chat_messages" not in st.session_state:
     st.session_state.chat_messages = []
+
+if not st.session_state.chat_messages:
+    st.markdown("**Try asking:**")
+    suggestions = [
+        "What makes a good solar farm location?",
+        "Compare solar potential in Sahara vs Northern Europe",
+        "What climate risks affect wind farms?",
+        "Explain how OlmoEarth embeddings work for site scoring",
+    ]
+    cols = st.columns(2)
+    for i, suggestion in enumerate(suggestions):
+        if cols[i % 2].button(suggestion, use_container_width=True, key=f"suggest_{i}"):
+            st.session_state.chat_messages.append({"role": "user", "content": suggestion})
+            st.rerun()
+    st.divider()
 
 for msg in st.session_state.chat_messages:
     with st.chat_message(msg["role"]):
