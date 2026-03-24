@@ -1,4 +1,4 @@
-"""Site Selection — pick a site, score suitability across all energy types."""
+"""Site Selection — pick a site, compare Factor Engine vs ML suitability."""
 
 import sys
 from pathlib import Path
@@ -40,7 +40,7 @@ st.markdown(
 st.divider()
 
 # ------------------------------------------------------------------
-# Score all 4 energy types
+# Score
 # ------------------------------------------------------------------
 col1, col2 = st.columns([2, 1])
 with col1:
@@ -60,45 +60,79 @@ with col1:
         if results:
             st.session_state.last_suitability_all = results
 
-            # Find best type
-            best_type = max(results, key=lambda t: results[t].get("combined_score", 0))
-            best_score = results[best_type].get("combined_score", 0)
-            best_confidence = results[best_type].get("confidence", "unknown")
-
-            st.session_state.last_suitability = results[best_type]
-
 with col2:
     st.page_link("pages/0_AI_Chat.py", label="Ask AI", icon="💬", use_container_width=True)
 
 # ------------------------------------------------------------------
-# Results
+# Results — Dual Score Comparison
 # ------------------------------------------------------------------
 if st.session_state.get("last_suitability_all"):
     results = st.session_state.last_suitability_all
-
-    best_type = max(results, key=lambda t: results[t].get("combined_score", 0))
-    best_score = results[best_type].get("combined_score", 0)
-
-    st.subheader(f"Best: {best_type.title()} ({best_score:.0%})")
-
-    # Show 3 types (geothermal excluded — insufficient real-time data for demo)
-    cols = st.columns(3)
     icons = {"solar": "☀️", "wind": "💨", "hydro": "💧"}
 
-    for i, etype in enumerate(["solar", "wind", "hydro"]):
-        with cols[i]:
-            if etype in results:
-                score = results[etype].get("combined_score", 0)
-                is_best = etype == best_type
-                label = f"{icons.get(etype, '')} {etype.title()}"
-                if is_best:
-                    st.metric(label, f"{score:.0%}", "BEST")
-                else:
-                    st.metric(label, f"{score:.0%}")
-            else:
-                st.metric(f"{icons.get(etype, '')} {etype.title()}", "N/A")
+    # Best type by factor score
+    best_factor = max(results, key=lambda t: results[t].get("factor_score", 0))
 
-    # Factor breakdown for each type
+    # Check if any ML scores available
+    any_ml = any(r.get("ml_available", False) for r in results.values())
+
+    st.subheader("Comparison: Factor Engine vs OlmoEarth ML")
+
+    if any_ml:
+        st.caption("Two independent scoring methods — agreement = high confidence")
+    else:
+        st.caption("ML scores available when location is near a pre-computed embedding")
+
+    # Header row
+    header_cols = st.columns([2, 1.5, 1.5, 1])
+    header_cols[0].markdown("**Energy Type**")
+    header_cols[1].markdown("**Factor Engine** *(real-time APIs)*")
+    header_cols[2].markdown("**OlmoEarth ML** *(satellite embeddings)*")
+    header_cols[3].markdown("**Agreement**")
+
+    st.divider()
+
+    for etype in ["solar", "wind", "hydro"]:
+        if etype not in results:
+            continue
+        r = results[etype]
+        factor = r.get("factor_score", 0)
+        ml = r.get("ml_score")
+        ml_avail = r.get("ml_available", False)
+        is_best = etype == best_factor
+
+        row = st.columns([2, 1.5, 1.5, 1])
+
+        # Energy type label
+        label = f"{icons.get(etype, '')} **{etype.title()}**"
+        if is_best:
+            label += " 🏆"
+        row[0].markdown(label)
+
+        # Factor engine score
+        row[1].metric("Factor", f"{factor:.0%}", label_visibility="collapsed")
+
+        # ML score
+        if ml_avail and ml is not None:
+            row[2].metric("ML", f"{ml:.0%}", label_visibility="collapsed")
+        else:
+            row[2].markdown("*No nearby embedding*")
+
+        # Agreement indicator
+        if ml_avail and ml is not None:
+            diff = abs(factor - ml)
+            if diff < 0.15:
+                row[3].markdown("✅ Agree")
+            elif diff < 0.30:
+                row[3].markdown("⚠️ Differ")
+            else:
+                row[3].markdown("❌ Disagree")
+        else:
+            row[3].markdown("—")
+
+    # ------------------------------------------------------------------
+    # Factor Breakdown
+    # ------------------------------------------------------------------
     st.divider()
     st.subheader("Factor Breakdown")
 
@@ -111,7 +145,12 @@ if st.session_state.get("last_suitability_all"):
         if not factors:
             continue
 
-        with st.expander(f"{icons.get(etype, '')} {etype.title()} — {r.get('combined_score', 0):.0%}", expanded=(etype == best_type)):
+        is_best = etype == best_factor
+        with st.expander(
+            f"{icons.get(etype, '')} {etype.title()} — Factor: {r.get('factor_score', 0):.0%}"
+            + (f" | ML: {r['ml_score']:.0%}" if r.get('ml_available') and r.get('ml_score') is not None else ""),
+            expanded=is_best,
+        ):
             real = {k: v for k, v in factors.items() if v != 0.5}
             estimated = {k: v for k, v in factors.items() if v == 0.5}
 
@@ -121,7 +160,7 @@ if st.session_state.get("last_suitability_all"):
                     fcols[j % len(fcols)].metric(name, f"{value:.0%}")
 
             if estimated:
-                st.caption(f"⚠️ {len(estimated)} factors estimated (no real-time data): {', '.join(estimated.keys())}")
+                st.caption(f"⚠️ {len(estimated)} factors estimated: {', '.join(estimated.keys())}")
 
             if data_sources:
                 with st.expander("Data sources"):
