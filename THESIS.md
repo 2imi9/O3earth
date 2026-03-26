@@ -30,7 +30,7 @@
 
 ## 1. Abstract
 
-We present a generalizable framework for geospatial site suitability assessment using foundation model embeddings, demonstrated through the application of renewable energy facility siting across four energy types (solar, wind, hydro, geothermal) and six continents. Our approach uses frozen OlmoEarth encoder embeddings (768-dimensional landscape representations from Sentinel-2 imagery) as features for lightweight statistical classifiers (XGBoost), following the representation learning paradigm established by Tseng et al. (2022) for agricultural applications. Unlike existing approaches that rely on either classical GIS multi-criteria decision analysis (MCDA) or deep learning for infrastructure detection alone, our system uses foundation model embeddings as a learned land characterization layer within a broader configurable suitability scoring pipeline. We validate through a multi-pronged framework: ablation studies show embeddings improve AUC from 0.852 (geographic baseline) to 0.927 (combined); leave-one-country-out spatial cross-validation across 63 countries yields AUC=0.883; temporal validation (training on pre-2020 plants, testing on 2020-2025 plants) achieves AUC=0.952; and the model transfers strongly to data-scarce regions including Africa (AUC=0.919) and South America (AUC=0.943). Per-energy-type analysis reveals that embeddings contribute most where visual land characteristics drive suitability (solar: +6.2%, hydro: +10.1%), and less where subsurface or policy factors dominate (wind, geothermal). While demonstrated on renewable energy, the methodology generalizes to any location-dependent infrastructure siting problem (e.g., EV charging, battery storage, data centers, agricultural facilities). Dataset and embeddings are publicly available at huggingface.co/datasets/2imi9/O3earth.
+We present a generalizable framework for geospatial site suitability assessment using foundation model embeddings, demonstrated through the application of renewable energy facility siting across four energy types (solar, wind, hydro, geothermal) and six continents. Our approach uses frozen OlmoEarth encoder embeddings (768-dimensional landscape representations from Sentinel-2 imagery) as features for lightweight statistical classifiers (XGBoost), following the representation learning paradigm established by Tseng et al. (2022) for agricultural applications. Unlike existing approaches that rely on either classical GIS multi-criteria decision analysis (MCDA) or deep learning for infrastructure detection alone, our system uses foundation model embeddings as a learned land characterization layer within a broader configurable suitability scoring pipeline. We validate through a multi-pronged framework: ablation studies show embeddings improve AUC from 0.852 (geographic baseline) to 0.927 (combined); leave-one-country-out spatial cross-validation across 63 countries yields AUC=0.867; temporal validation (training on pre-2020 plants, testing on 2020-2025 plants) achieves AUC=0.852 (controlling for spatial autocorrelation); and the model transfers strongly to data-scarce regions including Africa (AUC=0.919) and South America (AUC=0.943). Per-energy-type analysis reveals that embeddings contribute most where visual land characteristics drive suitability (solar: +6.2%, hydro: +10.1%), and less where subsurface or policy factors dominate (wind, geothermal). While demonstrated on renewable energy, the methodology generalizes to any location-dependent infrastructure siting problem (e.g., EV charging, battery storage, data centers, agricultural facilities). Dataset and embeddings are publicly available at huggingface.co/datasets/2imi9/O3earth.
 
 ---
 
@@ -48,7 +48,7 @@ No published work combines a geospatial foundation model with configurable multi
 
 ### Our Contributions
 
-1. **Generalizable framework:** First system combining geospatial foundation model embeddings with configurable multi-factor suitability scoring for infrastructure site recommendation
+1. **Generalizable framework:** First application of geospatial foundation model embeddings with configurable multi-factor suitability scoring for infrastructure site recommendation
 2. **Representation learning for suitability:** Demonstrating that frozen foundation model embeddings + lightweight classifiers (XGBoost/MLP) outperform traditional GIS features — following the paradigm from Tseng et al. (2022) but applied to energy infrastructure
 3. **Multi-pronged validation:** Retroactive temporal prediction, cross-region transfer, expert-alignment with NREL/IRENA, negative validation, and SHAP interpretability — addressing the absence of existing benchmarks
 4. **Cross-region transfer:** Train on data-rich regions (US/EU), predict on data-scarce regions (developing nations)
@@ -57,7 +57,7 @@ No published work combines a geospatial foundation model with configurable multi
 
 ### Why This Matters
 
-> "We demonstrate that pretrained geospatial foundation model embeddings, combined with lightweight statistical classifiers, achieve strong suitability prediction (AUC=0.927 combined, 0.883 spatial CV across 63 countries) without the computational cost of end-to-end fine-tuning — making the system deployable at scale for infrastructure site recommendation. Temporal validation (AUC=0.952) confirms the model predicts future development sites from historical patterns."
+> "We demonstrate that pretrained geospatial foundation model embeddings, combined with lightweight statistical classifiers, achieve strong suitability prediction (AUC=0.927 combined, 0.867 spatial CV across 63 countries) without the computational cost of end-to-end fine-tuning — making the system deployable at scale for infrastructure site recommendation. Temporal validation (AUC=0.877, or 0.852 after spatial autocorrelation control) confirms the model predicts future development sites from historical patterns."
 
 ### Methodological Justification
 
@@ -68,7 +68,7 @@ A key design decision is using frozen OlmoEarth embeddings with statistical clas
 | **TIML (Tseng et al., 2022)** | Satellite time series → LSTM encoder → meta-learned classifier | SOTA on agricultural classification in data-sparse regions |
 | **SatCLIP (Klemmer et al., 2023)** | Location + satellite embeddings → linear classifier | +8-12% over location-only baselines |
 | **CLIP (Radford et al., 2021)** | Frozen image embeddings → linear probe | Competitive with fine-tuned models |
-| **Ours** | Sentinel-2 → frozen OlmoEarth encoder → XGBoost | AUC=0.927 (combined), 0.883 (spatial CV, 63 countries) |
+| **Ours** | Sentinel-2 → frozen OlmoEarth encoder → XGBoost | AUC=0.927 (combined), 0.867 (spatial CV, 63 countries) |
 
 The intelligence resides in the **representation** (768-dim embeddings that capture land cover, terrain texture, vegetation, infrastructure patterns), not in the final classifier. This design enables:
 - **Scalability:** Extract once, predict anywhere — no GPU needed at inference for pre-computed grids
@@ -382,10 +382,12 @@ This is a novel task — no existing benchmark exists for foundation-model-based
 | Geographic only | Lat/lon features (8 dims) | **0.852** |
 | OlmoEarth only | 768-dim embeddings | **0.913** |
 | **Combined** | **Embeddings + Geographic** | **0.927** |
-| Spatial CV (63 countries) | Leave-one-country-out | **0.883** |
-| Temporal validation | Pre-2020 → post-2020 | **0.952** |
+| Spatial CV (63 countries) | Leave-one-country-out | **0.867** |
+| Temporal validation | Pre-2020 → post-2020 | **0.877** |
 
-**Key result:** OlmoEarth embeddings improve AUC from 0.852 → 0.913 (+6.1%) over geographic baseline. Combined features achieve 0.927. Temporal validation (0.952) confirms genuine predictive capability.
+*Note: Temporal AUC drops to 0.852 when controlling for spatial autocorrelation (evaluating only post-2020 plants >200km from any training plant), which still exceeds the distance-only baseline (0.818).*
+
+**Key result:** OlmoEarth embeddings improve AUC from 0.852 → 0.913 (+6.1%) over geographic baseline. Combined features achieve 0.927. Temporal validation (0.877, or 0.852 controlling for spatial proximity) confirms genuine predictive capability.
 
 ### Interpretability (SHAP Analysis)
 
@@ -465,9 +467,11 @@ These experiments established that OlmoEarth + Sentinel-2 at 10m resolution is b
 
 **Key finding:** Embeddings help most where **visual land characteristics** determine suitability (solar: flat open land, hydro: water features). For energy types driven by subsurface or policy factors (wind: subsidies/zoning, geothermal: underground heat flow), geographic features are stronger — but combined always wins. This confirms the model captures physical site characteristics rather than policy patterns.
 
+*Note: Geothermal results (N=260) should be interpreted with caution due to small sample size. The -6.8% embedding delta may reflect noise rather than a systematic pattern.*
+
 #### Spatial Cross-Validation (Leave-One-Country-Out)
 
-**Mean AUC = 0.883 ± 0.093 across 63 countries** (the honest, spatially rigorous number)
+**Mean AUC = 0.867 ± 0.114 across 63 countries** (the honest, spatially rigorous number)
 
 | Region | AUC | N |
 |--------|-----|---|
@@ -482,16 +486,17 @@ The model generalizes globally. Africa (0.919) and South America (0.943) perform
 
 **Bottom performers:** China (0.621), Kazakhstan (0.599) — vast countries with extremely diverse land types, where a single country-level holdout loses significant training signal.
 
-#### Temporal Validation (Strongest Evidence)
+#### Temporal Validation
 
 **Train on pre-2020 plants → Test on 2020-2025 plants**
 
 | Model | AUC |
 |-------|-----|
-| Logistic Regression | **0.952** |
-| XGBoost | **0.952** |
+| Standard temporal split | 0.877 |
+| Distance-only baseline | 0.818 |
+| **Leakage-controlled (>200km)** | **0.852** |
 
-The model trained on historical plant locations correctly predicts where **new** plants were subsequently built. This is the strongest evidence that the model captures genuine suitability signals rather than memorizing existing development patterns.
+The standard temporal AUC (0.877) is partially inflated by spatial autocorrelation — new plants tend to be built near existing ones (mean distance 262km vs 929km for negatives). Controlling for this by evaluating only on post-2020 plants >200km from any training plant yields AUC=0.852, which still exceeds the distance-only baseline (0.818) by +3.4%, confirming the model captures genuine suitability signals beyond spatial proximity.
 
 #### SHAP Interpretability Analysis
 
@@ -509,9 +514,9 @@ The signal is distributed across the embedding space — the model leverages div
 | Test | Result | Verdict |
 |------|--------|---------|
 | Random label test | AUC = 0.497 | ✅ Not memorizing noise |
-| Leave-one-country-out | AUC = 0.883 | ✅ Generalizes spatially |
+| Leave-one-country-out | AUC = 0.867 | ✅ Generalizes spatially |
 | 5-fold CV stability | 0.911 ± 0.015 | ✅ Low variance |
-| Temporal validation | AUC = 0.952 | ✅ Predicts future development |
+| Temporal validation | AUC = 0.877 (0.852 controlled) | ✅ Predicts future development |
 | Learning curve | 0.82→0.90 (scales with data) | ✅ Not saturated |
 
 #### Comparison to Related Work
@@ -521,14 +526,14 @@ The signal is distributed across the embedding space — the model leverages div
 | TIML (Tseng 2022) | Crop classification | 306-1,345/task | 0.890 mean | **0.927** |
 | SatCLIP (Klemmer 2023) | Geo embeddings | ~5K downstream | +8-12% over baseline | **+7.5%** |
 | Jean et al. 2016 | Poverty prediction | ~4,000 | N/A | — |
-| Global Suitability XAI (MDPI 2022) | Energy suitability | 55,000+ | ~0.85 | **0.927** |
-| **Ours** | **Site suitability** | **8,000** | **0.927** | — |
+| Global Suitability XAI (MDPI 2022) | Energy suitability | 55,000+ | ~0.85 | **0.867 (spatial CV)** |
+| **Ours** | **Site suitability** | **8,000** | **0.867 (spatial CV)** | — |
 
-#### Remaining Experiments
-- [ ] Expert alignment with NREL/IRENA technical potential zones
-- [ ] Partial fine-tuning comparison (unfreeze last 2-3 OlmoEarth layers)
-- [ ] Resume extraction to 24,866 samples (optional — 8,000 sufficient)
-- [ ] Per-energy-type SHAP analysis
+#### Future Work
+- Expert alignment validation: comparing top-scored undeveloped sites against NREL technical potential zones and IRENA renewable energy corridors
+- Partial fine-tuning comparison: unfreezing the last 2-3 OlmoEarth transformer layers to quantify the ceiling for task-specific adaptation
+- Per-energy-type SHAP analysis to identify which landscape features drive suitability for each energy type
+- Extending extraction to the full 24,866 samples (current 8,000 is sufficient for main results)
 
 ### Best Checkpoint
 
@@ -551,10 +556,8 @@ O3 EartH is a single integrated project containing both the suitability model an
 | LLM Integration | NVIDIA NIM (cloud) or vLLM (local) | `src/llm/` |
 | MCP Server | Model Context Protocol | `src/mcp/` |
 | Climate Risk | SSP scenarios, extreme events | `src/models/` |
-| Valuation Engine | NPV/IRR/LCOE | `src/valuation/` |
 | EIA Data Pipeline | EIA API v2 (860/923/AEO) | `src/data_clients/` |
 | Satellite Pipeline | Planetary Computer STAC API | `src/data_clients/` |
-| Containerization | Docker (CPU + GPU) | `platform/docker/` |
 
 ### API Endpoints
 
@@ -563,7 +566,6 @@ O3 EartH is a single integrated project containing both the suitability model an
 | /api/health | GET | Module availability check |
 | /api/suitability | POST | Site suitability scoring |
 | /api/climate-risk | POST | Climate risk assessment |
-| /api/value-asset | POST | 25-year NPV/IRR/LCOE valuation |
 | /api/eia/generators | GET | EIA generator inventory |
 | /api/eia/generation/{state} | GET | State generation data |
 | /api/eia/prices | GET | Price forecasts |

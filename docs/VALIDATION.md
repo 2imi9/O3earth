@@ -45,13 +45,20 @@ The 4.4% drop from standard CV (0.911 → 0.867) quantifies the geographic leaka
 
 ## Temporal Validation
 
-Train on locations where energy plants were built before 2020. Test on plants built 2020–2025. This tests whether the model predicts future development, not just memorizes existing sites.
+Train on locations where energy plants were built before 2020. Test on plants built 2020–2025.
 
 - **Train:** 291 pre-2020 positives + 1,854 negatives
 - **Test:** 126 post-2020 positives + 796 negatives
-- **AUC: 0.877**
 
-The model successfully identifies locations where energy infrastructure was built after the training cutoff.
+| Method | AUC | Interpretation |
+|--------|-----|----------------|
+| Standard temporal split | 0.877 | Partially inflated by spatial proximity |
+| Distance-only baseline | 0.818 | New plants built near existing ones |
+| **Leakage-controlled (>200km)** | **0.852** | **Honest temporal signal** |
+
+### Spatial Autocorrelation Analysis
+
+Post-2020 plants average 262km from the nearest pre-2020 plant, while negatives average 929km. This proximity inflates the standard temporal AUC. Evaluating only on post-2020 plants >200km from any training plant yields AUC=0.852 — still above the distance-only baseline (0.818) by +3.4%, confirming the model captures genuine suitability signals beyond spatial proximity.
 
 ## Regional Generalization
 
