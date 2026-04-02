@@ -1,0 +1,57 @@
+# Wandb
+wandb/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Model checkpoints (too large)
+project_data/
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+
+# Raw satellite data
+dataset/
+
+# Embeddings (on HuggingFace instead)
+data/embeddings/
+data/embeddings_shuffled/
+
+# Environment / secrets
+.env
+.env.local
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Platform
+platform/.env
+
+# Reference repos (not ours)
+olmoearth_ref/
+data_sources/
+
+# Claude
+.claude/
+CLAUDE.md
+data/osm_energy_polygons.geojson
+*.geojson
+docs/demo.mp4
+THESIS.md

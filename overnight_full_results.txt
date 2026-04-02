@@ -1,0 +1,26 @@
+[2026-03-22 00:47:19]   Training completed in 0.4h (exit=0)
+[2026-03-22 00:47:19]   format=2026-03-22 00:30:50,289 loglevel=INFO   logger=rslearn.train.callbacks.checkpointing on_validation_end() L65   saved best checkpoint to project_data\openenergyengine\run_overnight_v1\best.ckpt (val_loss=1.1824711561203003)
+[2026-03-22 00:47:19]   format=2026-03-22 00:31:49,589 loglevel=INFO   logger=rslearn.train.callbacks.checkpointing on_validation_end() L65   saved best checkpoint to project_data\openenergyengine\run_overnight_v1\best.ckpt (val_loss=1.1349775791168213)
+[2026-03-22 00:47:19]   format=2026-03-22 00:32:18,595 loglevel=INFO   logger=rslearn.train.callbacks.checkpointing on_validation_end() L65   saved best checkpoint to project_data\openenergyengine\run_overnight_v1\best.ckpt (val_loss=1.1240934133529663)
+[2026-03-22 00:47:19]   format=2026-03-22 00:33:42,155 loglevel=INFO   logger=rslearn.train.callbacks.checkpointing on_validation_end() L65   saved best checkpoint to project_data\openenergyengine\run_overnight_v1\best.ckpt (val_loss=1.1049927473068237)
+[2026-03-22 00:47:19]   format=2026-03-22 00:35:08,019 loglevel=INFO   logger=rslearn.train.callbacks.checkpointing on_validation_end() L65   saved best checkpoint to project_data\openenergyengine\run_overnight_v1\best.ckpt (val_loss=1.0881726741790771)
+[2026-03-22 00:47:19]   format=2026-03-22 00:40:12,987 loglevel=INFO   logger=rslearn.train.callbacks.checkpointing on_validation_end() L65   saved best checkpoint to project_data\openenergyengine\run_overnight_v1\best.ckpt (val_loss=1.054731845855713)
+[2026-03-22 00:47:19]   Epoch 42/99 ---------------- 107/107 0:00:21 •       5.11it/s v_num: 0.000
+[2026-03-22 00:47:19]   0:00:00                  val_loss: 1.114
+[2026-03-22 00:47:19] ============================================================
+[2026-03-22 00:47:19] STEP 4: Test best checkpoint for 'run_overnight_v1'
+[2026-03-22 00:47:19] ============================================================
+[2026-03-22 00:47:19]   Running: Test run_overnight_v1
+[2026-03-22 00:47:19]   Command: C:\Users\Frank\OneDrive\Desktop\Github\FT_olmoearth\.venv\Scripts\python.exe -m rslearn.main model test --config C:\Users\Frank\OneDrive\Desktop\Github\FT_olmoearth\configs\model_run_overnight_v1.yaml --ckpt_path C:\Users\Frank\OneDrive\Desktop\Github\FT_olmoearth\project_data\openenergyengine\run_overnight_v1\best.ckpt
+[2026-03-22 00:47:20]   FAILED (1s): ^^^^^^^^^^^^^^^^
+  File "C:\Users\Frank\AppData\Roaming\uv\python\cpython-3.12.12-windows-x86_64-none\Lib\multiprocessing\context.py", line 243, in get_context
+    return super().get_context(method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Frank\AppData\Roaming\uv\python\cpython-3.12.12-windows-x86_64-none\Lib\multiprocessing\context.py", line 193, in get_context
+    raise ValueError('cannot find context for %r' % method) from None
+ValueError: cannot find context for 'forkserver'
+
+[2026-03-22 00:47:20] ============================================================
+[2026-03-22 00:47:20] PIPELINE COMPLETE
+[2026-03-22 00:47:20] Finished at 2026-03-22 00:47:20.049123
+[2026-03-22 00:47:20] ============================================================

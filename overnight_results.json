@@ -1,0 +1,55 @@
+{
+  "merged_total": 321614,
+  "merged_by_type": {
+    "wind": 257479,
+    "solar": 45541,
+    "hydro": 18228,
+    "geothermal": 366
+  },
+  "merged_by_region": {
+    "Oceania": 92552,
+    "North America": 84469,
+    "Asia": 80261,
+    "Europe": 40663,
+    "South America": 15435,
+    "Africa": 8234
+  },
+  "suitability_total": 24866,
+  "suitability_by_type": {
+    "('geothermal', 0)": 500,
+    "('geothermal', 1)": 366,
+    "('hydro', 0)": 2000,
+    "('hydro', 1)": 2000,
+    "('solar', 0)": 5000,
+    "('solar', 1)": 5000,
+    "('wind', 0)": 5000,
+    "('wind', 1)": 5000
+  },
+  "quality_checks": {
+    "no_nan_lat": "True",
+    "no_nan_lon": "True",
+    "no_nan_energy_type": "True",
+    "no_nan_label": "True",
+    "valid_labels": "True",
+    "valid_coords": "False",
+    "balance_solar": "True",
+    "balance_wind": "True",
+    "balance_hydro": "True",
+    "balance_geothermal": "True",
+    "geo_diversity_solar": "True",
+    "geo_diversity_wind": "True",
+    "geo_diversity_hydro": "True",
+    "geo_diversity_geothermal": "True",
+    "no_duplicates": "False"
+  },
+  "quality_pass_rate": "13/15",
+  "factor_engine": "PASS",
+  "olmoearth_test": "FAIL: [Errno 2] No such file or directory: 'OLMOEARTH_V1_BASE\\\\config.json'",
+  "baseline_auc_solar": 0.8294,
+  "baseline_auc_wind": 0.7952,
+  "baseline_auc_hydro": 0.7476,
+  "baseline_auc_geothermal": 0.697,
+  "time_split_train": 10200,
+  "time_split_test": 3753,
+  "completed_at": "2026-03-22 03:07:13.772038"
+}

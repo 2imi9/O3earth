@@ -1,0 +1,29 @@
+{
+  "solar": {
+    "auc_cv": 0.9585,
+    "n": 3205,
+    "pos": 2159,
+    "neg": 1046
+  },
+  "wind": {
+    "auc_cv": 0.8976,
+    "n": 3254,
+    "pos": 2190,
+    "neg": 1064
+  },
+  "hydro": {
+    "auc_cv": 0.9184,
+    "n": 1281,
+    "pos": 868,
+    "neg": 413
+  },
+  "geothermal": {
+    "auc_cv": 0.9303,
+    "n": 260,
+    "pos": 160,
+    "neg": 100
+  },
+  "overall_cv": 0.9244,
+  "spatial_cv": 0.9039,
+  "spatial_cv_countries": 63
+}
