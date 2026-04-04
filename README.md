@@ -57,14 +57,39 @@ MCP tools available for programmatic access. Details in [PLATFORM.md](docs/PLATF
 | EIA API v2 | US power plant data | API key |
 | Planetary Computer | Sentinel-2 imagery | None |
 
-## Quick Start
+## Environment Setup
 
 ```bash
 # Clone and install
 git clone https://github.com/2imi9/O3earth.git
 cd O3earth
 pip install -r requirements.txt
+```
 
+### API Keys
+
+| Variable | Required For | Get One |
+|----------|-------------|---------|
+| `EIA_API_KEY` | US power plant data (scripts) | [eia.gov/opendata](https://www.eia.gov/opendata/register.php) |
+| `NVIDIA_API_KEY` | AI Chat (platform) | [build.nvidia.com](https://build.nvidia.com/) |
+
+Create a `.env` file in `platform/`:
+
+```bash
+cp platform/.env.example platform/.env
+# Edit with your keys
+```
+
+Or export directly:
+
+```bash
+export EIA_API_KEY="your-key-here"
+export NVIDIA_API_KEY="your-key-here"
+```
+
+## Quick Start
+
+```bash
 # Run the platform (no GPU needed)
 cd platform
 uvicorn api.main:app --port 8000 &

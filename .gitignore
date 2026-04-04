@@ -48,10 +48,17 @@ platform/.env
 olmoearth_ref/
 data_sources/
 
+# Large data files
+data/embeddings_v3/embeddings.npy
+data/embeddings_stats/
+*.geojson
+source_data/eia860/*.xlsx
+source_data/eia860/*.csv
+overnight_*.txt
+overnight_*.json
+
 # Claude
 .claude/
 CLAUDE.md
-data/osm_energy_polygons.geojson
-*.geojson
 docs/demo.mp4
 THESIS.md

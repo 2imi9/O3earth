@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Download all US renewable energy plants from EIA API v2 with retry logic."""
 
-import requests, pandas as pd, time, json, sys
+import os, requests, pandas as pd, time, json, sys
 from pathlib import Path
 
-EIA_API_KEY = "r84SSU7MzfwG3lbExInY26kc5Ek5fmculBx7Kt1J"
+EIA_API_KEY = os.environ.get("EIA_API_KEY")
+if not EIA_API_KEY:
+    raise RuntimeError("Set EIA_API_KEY environment variable. Get one at https://www.eia.gov/opendata/register.php")
 EIA_BASE = "https://api.eia.gov/v2/electricity/operating-generator-capacity/data/"
 FUEL_MAP = {"SUN": "solar", "WND": "wind", "WAT": "hydro", "GEO": "geothermal"}
 OUTPUT = Path("data/eia_plants.parquet")

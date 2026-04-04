@@ -23,7 +23,9 @@ from tqdm import tqdm
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger(__name__)
 
-EIA_API_KEY = os.environ.get("EIA_API_KEY", "r84SSU7MzfwG3lbExInY26kc5Ek5fmculBx7Kt1J")
+EIA_API_KEY = os.environ.get("EIA_API_KEY")
+if not EIA_API_KEY:
+    raise RuntimeError("Set EIA_API_KEY environment variable. Get one at https://www.eia.gov/opendata/register.php")
 EIA_BASE = "https://api.eia.gov/v2"
 
 OVERPASS_URL = "https://overpass-api.de/api/interpreter"
