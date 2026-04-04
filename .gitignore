@@ -49,7 +49,7 @@ olmoearth_ref/
 data_sources/
 
 # Large data files
-data/embeddings_v3/embeddings.npy
+# data/embeddings_v3/embeddings.npy  # 24MB, small enough to track
 data/embeddings_stats/
 *.geojson
 source_data/eia860/*.xlsx
