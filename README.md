@@ -57,48 +57,37 @@ MCP tools available for programmatic access. Details in [PLATFORM.md](docs/PLATF
 | EIA API v2 | US power plant data | API key |
 | Planetary Computer | Sentinel-2 imagery | None |
 
-## Environment Setup
+## Quick Start
+
+### 1. Clone
 
 ```bash
-# Clone and install
 git clone https://github.com/2imi9/O3earth.git
 cd O3earth
-pip install -r requirements.txt
 ```
 
-### API Keys
-
-| Variable | Required For | Get One |
-|----------|-------------|---------|
-| `EIA_API_KEY` | US power plant data (scripts) | [eia.gov/opendata](https://www.eia.gov/opendata/register.php) |
-| `NVIDIA_API_KEY` | AI Chat (platform) | [build.nvidia.com](https://build.nvidia.com/) |
-
-Create a `.env` file in `platform/`:
+### 2. Configure API keys (optional)
 
 ```bash
 cp platform/.env.example platform/.env
-# Edit with your keys
+# Edit with your keys (optional — Site Selection works without them)
 ```
 
-Or export directly:
+| Variable | Required For | Get One |
+|----------|-------------|---------|
+| `EIA_API_KEY` | US power plant data | [eia.gov/opendata](https://www.eia.gov/opendata/register.php) |
+| `NVIDIA_API_KEY` | AI Chat | [build.nvidia.com](https://build.nvidia.com/) |
 
-```bash
-export EIA_API_KEY="your-key-here"
-export NVIDIA_API_KEY="your-key-here"
-```
+### 3. Run
 
-## Quick Start
-
-### Docker (recommended)
+**Docker (recommended):**
 
 ```bash
 cd platform
 docker compose up --build
 ```
 
-Opens at [localhost:8501](http://localhost:8501). No Python setup needed.
-
-### Manual
+**Manual:**
 
 ```bash
 pip install -r requirements.txt
@@ -111,6 +100,10 @@ uvicorn api.main:app --port 8000
 cd platform
 streamlit run ui/app.py --server.port 8501
 ```
+
+### 4. Open
+
+Go to [localhost:8501](http://localhost:8501). Site Selection and Climate Risk work immediately. AI Chat requires `NVIDIA_API_KEY`.
 
 Dataset and pre-trained models on HuggingFace: [2imi9/O3earth](https://huggingface.co/datasets/2imi9/O3earth)
 
