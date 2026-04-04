@@ -24,7 +24,7 @@ class VLLMConfig:
     """
 
     # Model settings
-    model_id: str = "Qwen/Qwen3-8B"
+    model_id: str = "google/gemma-4-E2B-it"
     dtype: str = "float16"  # float16, bfloat16, or auto
     trust_remote_code: bool = True
 
@@ -59,7 +59,7 @@ class VLLMConfig:
         """Load configuration from environment variables.
 
         Environment variables:
-            VLLM_MODEL: Model ID (default: Qwen/Qwen3-8B)
+            VLLM_MODEL: Model ID (default: google/gemma-4-E2B-it)
             VLLM_DTYPE: Data type (default: float16)
             VLLM_GPU_MEMORY: GPU memory utilization (default: 0.9)
             VLLM_MAX_TOKENS: Max generation tokens (default: 2048)
@@ -67,7 +67,7 @@ class VLLMConfig:
             VLLM_TENSOR_PARALLEL: Tensor parallel size (default: 1)
         """
         return cls(
-            model_id=os.environ.get("VLLM_MODEL", "Qwen/Qwen3-8B"),
+            model_id=os.environ.get("VLLM_MODEL", "google/gemma-4-E2B-it"),
             dtype=os.environ.get("VLLM_DTYPE", "float16"),
             gpu_memory_utilization=float(os.environ.get("VLLM_GPU_MEMORY", "0.9")),
             max_tokens=int(os.environ.get("VLLM_MAX_TOKENS", "2048")),
