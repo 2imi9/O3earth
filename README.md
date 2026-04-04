@@ -89,10 +89,26 @@ export NVIDIA_API_KEY="your-key-here"
 
 ## Quick Start
 
+### Docker (recommended)
+
 ```bash
-# Run the platform (no GPU needed)
 cd platform
-uvicorn api.main:app --port 8000 &
+docker compose up --build
+```
+
+Opens at [localhost:8501](http://localhost:8501). No Python setup needed.
+
+### Manual
+
+```bash
+pip install -r requirements.txt
+
+# Terminal 1 — API
+cd platform
+uvicorn api.main:app --port 8000
+
+# Terminal 2 — UI
+cd platform
 streamlit run ui/app.py --server.port 8501
 ```
 

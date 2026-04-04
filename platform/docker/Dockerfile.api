@@ -8,14 +8,16 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Python deps (torch CPU-only to keep image smaller)
-COPY requirements.txt requirements-api.txt ./
+COPY platform/requirements.txt platform/requirements-api.txt ./
 RUN pip install --no-cache-dir \
     torch --index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -r requirements.txt -r requirements-api.txt
 
 # Copy application code
-COPY src/ src/
-COPY api/ api/
+COPY platform/src/ src/
+COPY platform/api/ api/
+COPY results/suitability/ results/suitability/
+COPY data/embeddings_v3/ data/embeddings_v3/
 
 ENV PYTHONPATH=/app
 

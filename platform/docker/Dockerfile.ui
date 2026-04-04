@@ -2,10 +2,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements-ui.txt ./
+COPY platform/requirements-ui.txt ./
 RUN pip install --no-cache-dir -r requirements-ui.txt
 
-COPY ui/ ui/
+COPY platform/ui/ ui/
 
 ENV PYTHONPATH=/app
 

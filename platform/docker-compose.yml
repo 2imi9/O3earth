@@ -1,8 +1,8 @@
 services:
   api:
     build:
-      context: .
-      dockerfile: docker/Dockerfile.api
+      context: ..
+      dockerfile: platform/docker/Dockerfile.api
     ports:
       - "8000:8000"
     environment:
@@ -24,8 +24,8 @@ services:
 
   ui:
     build:
-      context: .
-      dockerfile: docker/Dockerfile.ui
+      context: ..
+      dockerfile: platform/docker/Dockerfile.ui
     ports:
       - "8501:8501"
     environment:

@@ -75,8 +75,8 @@ async def score_suitability(req: SuitabilityRequest):
             scaler_path = Path(_project_root) / f"results/suitability/scaler_{req.energy_type}.pkl"
 
             if model_path.exists() and scaler_path.exists():
-                meta_path = Path(_project_root) / "data/embeddings_shuffled/embeddings_meta.csv"
-                emb_path = Path(_project_root) / "data/embeddings_shuffled/embeddings.npy"
+                meta_path = Path(_project_root) / "data/embeddings_v3/embeddings_meta.csv"
+                emb_path = Path(_project_root) / "data/embeddings_v3/embeddings.npy"
 
                 if meta_path.exists() and emb_path.exists():
                     import pandas as pd
