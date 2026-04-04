@@ -40,7 +40,7 @@ Web application with three components:
 
 | Page | What it does |
 |------|-------------|
-| **AI Chat** | LLM with full system knowledge (NVIDIA NIM or local Gemma 4) |
+| **AI Chat** | NVIDIA NIM LLM with full system knowledge |
 | **Site Selection** | Map → pick location → Factor Engine + ML scores |
 | **Climate Risk** | NASA POWER data + IPCC AR6 SSP projections |
 
@@ -78,46 +78,13 @@ cp platform/.env.example platform/.env
 | `EIA_API_KEY` | US power plant data | [eia.gov/opendata](https://www.eia.gov/opendata/register.php) |
 | `NVIDIA_API_KEY` | AI Chat (cloud) | [build.nvidia.com](https://build.nvidia.com/) |
 
-### 3. AI Chat backend (optional)
-
-AI Chat supports two backends — pick one or skip (Site Selection and Climate Risk work without it):
-
-**Option A: NVIDIA NIM (cloud, no GPU needed)**
-
-Set `NVIDIA_API_KEY` in `platform/.env`. Uses `openai/gpt-oss-20b` via NVIDIA's hosted API.
-
-**Option B: Local vLLM ([Gemma 4 E2B](https://huggingface.co/google/gemma-4-E2B-it))**
-
-```bash
-pip install vllm
-```
-
-Uncomment the vLLM settings in `platform/.env`:
-
-```bash
-VLLM_MODEL=google/gemma-4-E2B-it
-VLLM_DTYPE=float16
-VLLM_GPU_MEMORY=0.9
-```
-
-Gemma 4 E2B is 2.3B effective params — runs on a laptop with ~4GB VRAM.
-
-The AI Chat page lets you switch between backends in-app when both are available.
-
-### 4. Run
+### 3. Run
 
 **Docker (recommended):**
 
 ```bash
 cd platform
 docker compose up --build
-```
-
-**With GPU + local vLLM:**
-
-```bash
-cd platform
-docker compose -f docker-compose.yml -f docker-compose.gpu.yml up --build
 ```
 
 **Manual (no Docker):**
@@ -134,9 +101,9 @@ cd platform
 streamlit run ui/app.py --server.port 8501
 ```
 
-### 5. Open
+### 4. Open
 
-Go to [localhost:8501](http://localhost:8501). Site Selection and Climate Risk work immediately.
+Go to [localhost:8501](http://localhost:8501). Site Selection and Climate Risk work immediately — no GPU needed. AI Chat requires `NVIDIA_API_KEY`.
 
 Dataset and pre-trained models on HuggingFace: [2imi9/O3earth](https://huggingface.co/datasets/2imi9/O3earth)
 
@@ -149,7 +116,7 @@ O3earth/
 │   ├── scoring/           # Suitability engine
 │   ├── data_clients/      # Real-time API clients
 │   ├── mcp/               # MCP tools + handlers
-│   └── llm/               # NVIDIA NIM + vLLM
+│   └── llm/               # NVIDIA NIM
 ├── platform/
 │   ├── api/               # FastAPI backend
 │   └── ui/                # Streamlit frontend
