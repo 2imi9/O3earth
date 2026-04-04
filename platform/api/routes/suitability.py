@@ -3,7 +3,13 @@
 import sys
 from pathlib import Path
 
-_project_root = str(Path(__file__).resolve().parent.parent.parent.parent)
+# In Docker: /app/api/routes/suitability.py -> /app (3 levels)
+# Local:     platform/api/routes/suitability.py -> repo root (4 levels)
+_candidate = Path(__file__).resolve().parent.parent.parent
+if (_candidate / "data" / "embeddings_v3").exists():
+    _project_root = str(_candidate)
+else:
+    _project_root = str(_candidate.parent)
 if _project_root not in sys.path:
     sys.path.insert(0, _project_root)
 
