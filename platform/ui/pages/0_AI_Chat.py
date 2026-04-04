@@ -18,12 +18,30 @@ st.header("AI Chat")
 
 api = get_api_client()
 
-# Check LLM status
+# LLM backend selector
 llm_info = api.llm_status()
-if llm_info and llm_info.get("available"):
-    st.caption("Powered by NVIDIA NIM")
+nim_available = llm_info and llm_info.get("available")
+vllm_available = llm_info and llm_info.get("vllm_available", False)
+
+if nim_available or vllm_available:
+    backend_options = []
+    if nim_available:
+        backend_options.append("NVIDIA NIM (cloud)")
+    if vllm_available:
+        backend_options.append("Local vLLM (Gemma 4 E2B)")
+
+    if len(backend_options) > 1:
+        selected_backend = st.radio("LLM Backend", backend_options, horizontal=True)
+        st.session_state.llm_provider = "cloud" if "NIM" in selected_backend else "local"
+    elif nim_available:
+        st.session_state.llm_provider = "cloud"
+        st.caption("Powered by NVIDIA NIM")
+    else:
+        st.session_state.llm_provider = "local"
+        st.caption("Powered by local Gemma 4 E2B")
 else:
-    st.warning("No LLM available. Add `NVIDIA_API_KEY` to `.env`")
+    st.session_state.llm_provider = "auto"
+    st.warning("No LLM available. Add `NVIDIA_API_KEY` to `.env` or install vLLM for local inference.")
 
 # ------------------------------------------------------------------
 # Suggested prompts (show only when chat is empty)
@@ -116,6 +134,7 @@ Be concise and specific. When users ask about the system, explain using the arch
                 api_messages,
                 max_tokens=4096,
                 temperature=0.7,
+                provider=st.session_state.get("llm_provider", "auto"),
             )
 
         if result:

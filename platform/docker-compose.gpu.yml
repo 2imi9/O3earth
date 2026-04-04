@@ -16,7 +16,7 @@ services:
       - NVIDIA_TEMPERATURE=${NVIDIA_TEMPERATURE:-1.0}
       - NVIDIA_TOP_P=${NVIDIA_TOP_P:-0.95}
       - MCP_ENABLE_LLM=true
-      - VLLM_MODEL=${VLLM_MODEL:-Qwen/Qwen3-8B}
+      - VLLM_MODEL=${VLLM_MODEL:-google/gemma-4-E2B-it}
       - VLLM_GPU_MEMORY=${VLLM_GPU_MEMORY:-0.9}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]

@@ -37,7 +37,7 @@ class MCPConfig:
 
     # LLM integration
     enable_llm: bool = True
-    llm_model: str = "Qwen/Qwen3-8B"
+    llm_model: str = "google/gemma-4-E2B-it"
 
     # Caching
     cache_dir: Optional[str] = None
@@ -81,7 +81,7 @@ class MCPConfig:
             enable_eia_tools=parse_bool(os.environ.get("MCP_ENABLE_EIA", "true")),
             enable_satellite_tools=parse_bool(os.environ.get("MCP_ENABLE_SATELLITE", "true")),
             enable_llm=parse_bool(os.environ.get("MCP_ENABLE_LLM", "true")),
-            llm_model=os.environ.get("MCP_LLM_MODEL", "Qwen/Qwen3-8B"),
+            llm_model=os.environ.get("MCP_LLM_MODEL", "google/gemma-4-E2B-it"),
             log_level=os.environ.get("MCP_LOG_LEVEL", "INFO"),
             cache_dir=os.environ.get("MCP_CACHE_DIR"),
         )

@@ -332,7 +332,7 @@ Provide a clear, concise answer based on the context."""
         temperature: Optional[float] = None,
         max_rounds: int = 5,
     ) -> AgenticResult:
-        """Chat with tool calling loop (Qwen3-style function calling).
+        """Chat with tool calling loop (Gemma 4-style function calling).
 
         The model generates ``<tool_call>...</tool_call>`` blocks which are
         parsed, executed via *tool_handlers*, and fed back as tool-role
@@ -360,7 +360,7 @@ Provide a clear, concise answer based on the context."""
         total_completion = 0
 
         for _ in range(max_rounds):
-            # Apply chat template — Qwen3 accepts a `tools` kwarg
+            # Apply chat template with tools
             try:
                 prompt = tokenizer.apply_chat_template(
                     formatted,

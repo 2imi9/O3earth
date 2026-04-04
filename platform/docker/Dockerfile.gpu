@@ -22,7 +22,7 @@ COPY api/ api/
 ENV PYTHONPATH=/app
 
 # Pre-download model at build time so first request doesn't stall
-ARG VLLM_MODEL=Qwen/Qwen3-8B
+ARG VLLM_MODEL=google/gemma-4-E2B-it
 RUN python -c "from huggingface_hub import snapshot_download; snapshot_download('${VLLM_MODEL}')"
 
 EXPOSE 8000
