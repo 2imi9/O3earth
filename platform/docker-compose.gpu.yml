@@ -4,8 +4,8 @@
 services:
   api:
     build:
-      context: .
-      dockerfile: docker/Dockerfile.gpu
+      context: ..
+      dockerfile: platform/docker/Dockerfile.gpu
     environment:
       - EIA_API_KEY=${EIA_API_KEY:-}
       - PLANETARY_COMPUTER_KEY=${PLANETARY_COMPUTER_KEY:-}

@@ -10,14 +10,16 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install deps with CUDA-enabled torch + vLLM (use python -m pip to match python 3.11)
-COPY requirements.txt requirements-api.txt ./
+COPY requirements.txt platform/requirements-api.txt ./
 RUN python -m pip install --no-cache-dir --upgrade pip && \
     python -m pip install --no-cache-dir -r requirements.txt -r requirements-api.txt && \
     python -m pip install --no-cache-dir vllm
 
 # Copy application code
 COPY src/ src/
-COPY api/ api/
+COPY platform/api/ api/
+COPY results/suitability/ results/suitability/
+COPY data/embeddings_v3/ data/embeddings_v3/
 
 ENV PYTHONPATH=/app
 
