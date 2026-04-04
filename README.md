@@ -76,7 +76,9 @@ cp platform/.env.example platform/.env
 | Variable | Required For | Get One |
 |----------|-------------|---------|
 | `EIA_API_KEY` | US power plant data | [eia.gov/opendata](https://www.eia.gov/opendata/register.php) |
-| `NVIDIA_API_KEY` | AI Chat | [build.nvidia.com](https://build.nvidia.com/) |
+| `NVIDIA_API_KEY` | AI Chat (cloud) | [build.nvidia.com](https://build.nvidia.com/) |
+
+AI Chat supports two backends: **NVIDIA NIM** (cloud, no GPU) or **local vLLM** (requires GPU). See `platform/.env.example` for configuration.
 
 ### 3. Run
 
