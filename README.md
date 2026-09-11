@@ -7,13 +7,17 @@ O3 EartH scores renewable energy site suitability from frozen [OlmoEarth](https:
 > Ziming Qi | Northeastern University
 
 ```mermaid
-flowchart LR
-  A["Sentinel-2 L2A<br/>12 bands, 128x128 px<br/>4 seasonal scenes"] --> B["OlmoEarth BASE<br/>frozen, not fine-tuned"]
-  B --> C["768-dim embedding<br/>8,000 sites, 212 countries"]
-  C --> D["XGBoost<br/>CPU"]
-  D --> E["Random 5-fold split<br/>AUC 0.911"]
-  D --> F["Leave-one-country-out<br/>63 countries<br/>AUC 0.867"]
-  E -.->|"4.4 pt gap = geographic leakage"| F
+flowchart TD
+  A["Sentinel-2 L2A patch<br/>12 bands, 128x128 px, 4 seasonal scenes"]
+  B["OlmoEarth BASE encoder<br/>frozen, not fine-tuned"]
+  C["768-dim embedding<br/>8,000 sites across 212 countries"]
+  D["XGBoost classifier, CPU"]
+  E["Random 5-fold split<br/>AUC 0.911"]
+  F["Leave-one-country-out, 63 countries<br/>AUC 0.867"]
+  A --> B --> C --> D
+  D --> E
+  D --> F
+  E -.->|"4.4 pt gap: geographic leakage"| F
 ```
 
 ## Overview
