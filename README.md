@@ -2,7 +2,7 @@
 
 **Geospatial Site Suitability Assessment Using Foundation Model Embeddings**
 
-Do frozen geospatial foundation model embeddings predict renewable energy site suitability in countries never seen during training? Across 8,000 sites in 212 countries, leave-one-country-out AUC is **0.867**. Random 5-fold CV gives 0.911; the 4.4-point gap is geographic leakage. Scoring runs on CPU.
+Do frozen geospatial foundation model embeddings predict renewable energy site suitability in countries never seen during training? Across 8,000 sites in 212 countries, leave-one-country-out AUC is **0.867**. Scoring runs on CPU.
 
 <p align="center">
   <img src="docs/figures/pipeline.png" width="620"
@@ -21,6 +21,11 @@ Because negatives are random locations, a score measures how much a site resembl
 
 ## Results
 
+Leave-one-country-out AUC is **0.867 ± 0.114** over 63 held-out countries, against **0.911 ± 0.015** under random 5-fold CV; the 4.4-point gap is geographic leakage. Coordinate features alone already reach 0.852, so the embeddings contribute about 6 points. A random-label control returns 0.497, and per-continent AUC runs from 0.866 in Asia to 0.943 in South America.
+
+<details>
+<summary>Full results table, with a source for every number</summary>
+
 | What | Number | Note |
 |------|--------|------|
 | Spatial CV, leave-one-country-out, 63 countries | **0.867 ± 0.114** | Conservative headline. [VALIDATION.md](docs/VALIDATION.md) |
@@ -30,6 +35,8 @@ Because negatives are random locations, a score measures how much a site resembl
 | Regional spread, 6 continents | 0.866 Asia to 0.943 South America | [json](results/suitability/suitability_results.json) |
 | Later re-run: spatial CV / overall CV | 0.904 / 0.924 | Higher, but no code here reproduces it. [json](results/suitability/suitability_results_v3.json) |
 | Re-run per type: solar/geothermal/hydro/wind | 0.959 / 0.930 / 0.918 / 0.898 | n = 3,205 / 260 / 1,281 / 3,254. Random split, not spatial. [json](results/suitability/suitability_results_v3.json) |
+
+</details>
 
 Re-run the ablation and 5-fold CV:
 
