@@ -4,21 +4,10 @@
 
 O3 EartH scores renewable energy site suitability from frozen [OlmoEarth](https://github.com/allenai/olmoearth_pretrain) satellite embeddings with lightweight classifiers. Scoring runs on CPU.
 
-> Ziming Qi | Northeastern University
-
-```mermaid
-flowchart TD
-  A["Sentinel-2 L2A patch<br/>12 bands, 128x128 px, 4 seasonal scenes"]
-  B["OlmoEarth BASE encoder<br/>frozen, not fine-tuned"]
-  C["768-dim embedding<br/>8,000 sites across 212 countries"]
-  D["XGBoost classifier, CPU"]
-  E["Random 5-fold split<br/>AUC 0.911"]
-  F["Leave-one-country-out, 63 countries<br/>AUC 0.867"]
-  A --> B --> C --> D
-  D --> E
-  D --> F
-  E -.->|"4.4 pt gap: geographic leakage"| F
-```
+<p align="center">
+  <img src="docs/figures/pipeline.png" width="620"
+       alt="Pipeline: Sentinel-2 patch, frozen OlmoEarth encoder, 768-dim embedding, XGBoost on CPU, evaluated two ways: random 5-fold AUC 0.911 and leave-one-country-out AUC 0.867.">
+</p>
 
 ## Overview
 
@@ -57,44 +46,34 @@ Same pipeline, different inputs: the committed results came from the earlier `em
 
 ## Status
 
-- **Done.** Extraction pipeline, 8,000-location dataset over 212 countries, per-type XGBoost classifiers, ablation and 5-fold CV with saved results, plus a FastAPI + Streamlit platform with MCP tools scoring stored embeddings on CPU.
+- **Done.** Extraction pipeline, 8,000-location dataset over 212 countries, per-type XGBoost classifiers, ablation and 5-fold CV with saved results, plus a web app and MCP tools that score stored embeddings on CPU.
 - **Open.** No committed script regenerates the spatial CV or v3 results, and the v1 embeddings behind the documented numbers are gitignored, so a fresh clone cannot re-derive them. The T=1 vs T=4 comparison needs a run that saves output. Dataset is versioned by directory convention only (`embeddings/` + `models/` alongside `embeddings_v3/` + `models_v3/` on Hugging Face), with no tags in either repo.
 - **Known limitations.** Random negatives mean scores measure resemblance to built sites, not viability. Geothermal n=260. Spatial CV deviation is wide (±0.114), so per-country performance varies. [VALIDATION.md](docs/VALIDATION.md), [CITATION.cff](CITATION.cff) and the Hugging Face card still quote the older run and are not yet reconciled.
 
 ## Platform
 
-FastAPI + Streamlit, three pages: **AI Chat** (NVIDIA NIM), **Site Selection** (map, Factor Engine + ML scores), **Climate Risk** (NASA POWER + IPCC AR6 SSP). The Factor Engine scores 19 configurable factors from live APIs, separate from the ML path. MCP tools included. See [PLATFORM.md](docs/PLATFORM.md).
-
-Data sources: NASA POWER, Open-Elevation, Open-Meteo Flood, USGS Earthquake, Planetary Computer (all keyless) and EIA API v2 (key required).
+A web app with three views: **Site Selection** (pick a point on a map, compare the rule-based Factor Engine against the ML score), **Climate Risk** (NASA POWER observations with IPCC AR6 SSP projections), and an **AI Chat** assistant. The Factor Engine scores 19 factors from live APIs (NASA POWER, Open-Elevation, Open-Meteo Flood, USGS Earthquake, EIA) and is independent of the embedding path. MCP tools included. See [PLATFORM.md](docs/PLATFORM.md).
 
 ## Install and run
 
 ```bash
 git clone https://github.com/2imi9/O3earth.git
 cd O3earth && pip install -r requirements.txt
-cp platform/.env.example platform/.env   # optional keys
-```
-
-```bash
 cd platform && docker compose up --build
-# or: uvicorn api.main:app --port 8000  +  streamlit run ui/app.py --server.port 8501
 ```
 
-Open [localhost:8501](http://localhost:8501). Site Selection and Climate Risk work without keys. AI Chat needs `NVIDIA_API_KEY` ([build.nvidia.com](https://build.nvidia.com/)); US plant data needs `EIA_API_KEY` ([eia.gov/opendata](https://www.eia.gov/opendata/register.php)).
+Open [localhost:8501](http://localhost:8501). Site Selection and Climate Risk need no keys. AI Chat needs `NVIDIA_API_KEY`, US plant data needs `EIA_API_KEY`; copy `platform/.env.example` to `platform/.env` to set them.
 
 ## Repository layout
 
 ```
-src/factors/        19 scoring factors (rule-based engine)
-src/scoring/        Suitability engine
-src/data_clients/   API clients
-src/mcp/            MCP tools + handlers
-src/llm/            NVIDIA NIM client
-platform/           FastAPI backend + Streamlit frontend
-scripts/            Data pipeline, embedding extraction, training
+scripts/            Embedding extraction, dataset build, training
+src/factors/        19 rule-based scoring factors
+src/                Scoring engine, API clients, MCP tools
+platform/           Web app (API + UI)
 data/embeddings_v3/ 8,000 x 768 embeddings + metadata
 results/            Trained models and metrics
-docs/               Validation and platform docs
+docs/               Validation docs and figures
 ```
 
 ## Docs and data

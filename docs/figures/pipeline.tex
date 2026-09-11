@@ -1,0 +1,39 @@
+% O3 EartH: frozen-embedding pipeline and the two evaluation protocols.
+% Claim: honest spatial evaluation costs 4.4 AUC points.
+\documentclass[tikz,border=3mm]{standalone}
+\usetikzlibrary{positioning,arrows.meta,chains,fit,backgrounds,decorations.pathreplacing}
+\begin{document}
+\begin{tikzpicture}[
+    >=Stealth, font=\small, node distance=8mm and 8mm,
+    box/.style={draw, rounded corners, thick, minimum height=12mm, minimum width=5.4cm,
+                align=center, fill=white, inner sep=2mm},
+    data/.style={box, fill=blue!8},
+    model/.style={box, fill=teal!12},
+    small/.style={box, minimum width=4.4cm, minimum height=14mm},
+    eval/.style={small, fill=black!5},
+    head/.style={small, fill=orange!30, very thick},
+]
+  \begin{scope}[start chain=going below, every join/.style={->, thick}]
+    \node[data, on chain] (img)
+      {Sentinel-2 L2A\\[1pt]{\scriptsize 12 bands, $128\times128$\,px, 4 seasonal scenes}};
+    \node[model, on chain, join] (enc)
+      {OlmoEarth BASE encoder\\[1pt]{\scriptsize frozen, not fine-tuned}};
+    \node[model, on chain, join] (emb)
+      {768-dim embedding\\[1pt]{\scriptsize 8,000 sites across 212 countries}};
+    \node[model, on chain, join] (xgb)
+      {XGBoost classifier\\[1pt]{\scriptsize runs on CPU}};
+  \end{scope}
+
+  \node[eval, below=18mm of xgb, xshift=-37mm] (rand)
+    {Random 5-fold split\\[3pt]\textbf{AUC 0.911}};
+  \node[head, below=18mm of xgb, xshift=37mm] (loco)
+    {Leave-one-country-out\\[1pt]{\scriptsize 63 held-out countries}\\[3pt]\textbf{AUC 0.867}};
+
+  \draw[->, thick] (xgb.south) -- ++(0,-5mm) -| (rand.north);
+  \draw[->, thick] (xgb.south) -- ++(0,-5mm) -| (loco.north);
+
+  \draw[<->, thick, dashed, black!60] (rand.east) -- (loco.west)
+       node[midway, fill=white, inner sep=1.5pt, align=center, font=\scriptsize]
+       {4.4 pt gap:\\geographic\\leakage};
+\end{tikzpicture}
+\end{document}
