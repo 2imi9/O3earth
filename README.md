@@ -9,6 +9,16 @@ Do frozen geospatial foundation model embeddings predict renewable energy site s
        alt="Pipeline: Sentinel-2 patch, frozen OlmoEarth encoder, 768-dim embedding, XGBoost on CPU, evaluated two ways: random 5-fold AUC 0.911 and leave-one-country-out AUC 0.867.">
 </p>
 
+## Method
+
+- **Data.** 8,000 sites across 212 countries and 4 energy types. Positives are existing plants; negatives are random global locations matched by type count.
+- **Input.** Sentinel-2 L2A patches, 12 bands, 128x128 px at 10 m. Four seasonal scenes for solar, wind and hydro; a single scene for geothermal.
+- **Encoder.** OlmoEarth BASE, frozen and never fine-tuned, pooled to one 768-dim vector per site.
+- **Classifier.** XGBoost on the embedding. No GPU at scoring time.
+- **Evaluation.** Random 5-fold CV, and leave-one-country-out over the 63 countries holding at least 5 positives and 5 negatives. The second is the number reported: the first leaks geography between nearby train and test points.
+
+Because negatives are random locations, a score measures how much a site resembles places where plants already exist, not economic viability, permitting, or output.
+
 ## Results
 
 | What | Number | Note |
@@ -31,12 +41,6 @@ python scripts/train_suitability.py \
 ```
 
 Same pipeline, different inputs: the committed results came from the earlier `embeddings/` set, which lives on Hugging Face and is gitignored here. **No script in this repo reproduces the leave-one-country-out or v3 numbers.**
-
-## Status
-
-- **Done.** Extraction pipeline, 8,000-site dataset over 212 countries, per-type XGBoost classifiers, ablation and 5-fold CV with saved results, and a web app with MCP tools that scores stored embeddings on CPU.
-- **Open.** No committed script regenerates the spatial CV or v3 results, and the v1 embeddings behind the documented numbers are gitignored, so a fresh clone cannot re-derive them. The claim that multi-temporal (T=4) embeddings beat single-scene (T=1) is not established: [test_multitemporal.py](scripts/test_multitemporal.py) implements the comparison but saves no output. Dataset is versioned by directory convention only, with no tags.
-- **Known limitations.** Negatives are random locations, so scores measure resemblance to built sites, not economic viability, permitting, or output. Geothermal rests on 260 samples. Spatial CV deviation is wide (±0.114), so per-country performance varies. [VALIDATION.md](docs/VALIDATION.md), [CITATION.cff](CITATION.cff) and the Hugging Face card still quote the older run and are not yet reconciled.
 
 ## Install and run
 
