@@ -6,113 +6,77 @@ O3 EartH scores renewable energy site suitability from frozen [OlmoEarth](https:
 
 > Ziming Qi | Northeastern University
 
+```mermaid
+flowchart LR
+  A["Sentinel-2 L2A<br/>12 bands, 128x128 px<br/>4 seasonal scenes"] --> B["OlmoEarth BASE<br/>frozen, not fine-tuned"]
+  B --> C["768-dim embedding<br/>8,000 sites, 212 countries"]
+  C --> D["XGBoost<br/>CPU"]
+  D --> E["Random 5-fold split<br/>AUC 0.911"]
+  D --> F["Leave-one-country-out<br/>63 countries<br/>AUC 0.867"]
+  E -.->|"4.4 pt gap = geographic leakage"| F
+```
+
 ## Overview
 
-**Question.** Do frozen embeddings from a geospatial foundation model carry information about renewable energy site suitability that simple geographic features do not already provide, and does that information survive when the model is tested on countries it never saw during training?
+**Question.** Do frozen embeddings from a geospatial foundation model carry site-suitability information that simple geographic features do not already provide, and does it survive testing on countries never seen in training?
 
-**Method.** 8,000 locations across 212 countries and 4 energy types (solar, wind, hydro, geothermal). Each location is a Sentinel-2 L2A patch (12 bands, 128x128 px at 10 m). Solar, wind and hydro use 4 seasonal scenes; geothermal uses a single scene. Patches pass through a frozen OlmoEarth BASE encoder to give one 768-dim vector per location, and XGBoost classifies on top. Positives are existing energy sites; negatives are random global locations matched by energy type count. The encoder is never fine-tuned, so scoring a stored embedding is a CPU operation.
+**Method.** 8,000 locations, 212 countries, 4 energy types. Each location is a Sentinel-2 L2A patch (12 bands, 128x128 px at 10 m; 4 seasonal scenes, single scene for geothermal) passed through a frozen OlmoEarth BASE encoder to give one 768-dim vector, then classified by XGBoost. Positives are existing energy sites, negatives are random global locations matched by type count.
 
-**Answer.** Under leave-one-country-out spatial cross-validation across 63 countries, AUC is **0.867 ± 0.114**. I report this as the headline number because it is the evaluation that removes geographic leakage. Standard 5-fold cross-validation on the same embeddings gives **0.911 ± 0.015**. The gap of 4.4 points between the two is the leakage that random splits hide.
+**Answer.** Leave-one-country-out spatial CV across 63 countries gives **0.867 ± 0.114**. This is the headline number because it removes geographic leakage. Random 5-fold CV gives **0.911 ± 0.015**; the 4.4-point gap is the leakage that random splits hide.
 
-**What the embeddings add is real but modest.** Features derived only from latitude and longitude already reach **0.852**. Embeddings alone reach **0.913**, and embeddings plus those geographic features reach **0.927**. So the foundation model contributes about **+6.1 points** over geography, not the large jump a geography-only baseline near chance would imply. An earlier version of this README reported a 0.579 geographic baseline; that number is not supported by any result file in this repository and has been removed.
+**The gain over geography is modest.** Coordinate-derived features alone reach **0.852**, embeddings alone **0.913**, both together **0.927**. The foundation model adds about **+6.1 points**, not a jump from near chance. An earlier README reported a 0.579 geographic baseline; no result file supports it and it has been removed.
 
-**What is not identifiable.** The labels separate existing energy sites from random locations, so the classifier learns "does this landscape resemble places where plants have been built". That is not the same as economic viability, permitting feasibility, or output forecasting, and this dataset cannot distinguish those. Geothermal rests on 260 samples, too few to treat its per-type score as stable. The claim that multi-temporal (T=4) embeddings beat single-scene (T=1) embeddings is **not established here**: [scripts/test_multitemporal.py](scripts/test_multitemporal.py) implements the comparison but writes no saved output, so the repository contains no T=1 result.
-
-**Two runs, two numbers.** A later re-run stored in [suitability_results_v3.json](results/suitability/suitability_results_v3.json) reports a higher spatial CV AUC of 0.904 and overall CV of 0.924. No script in this repository reproduces that file, so the documented 0.867 / 0.911 run is the one to rely on. Both are listed below rather than the better one alone.
+**What is not identifiable.** Labels separate built sites from random locations, so the model learns landscape resemblance to existing plants, not economic viability, permitting, or output. Geothermal has 260 samples, too few to call stable. The multi-temporal claim (T=4 over T=1) is **not established here**: [test_multitemporal.py](scripts/test_multitemporal.py) implements the comparison but saves no output, so no T=1 result exists in this repo.
 
 ## Key results
 
 | What | Number | Note |
 |------|--------|------|
-| Spatial CV, leave-one-country-out, 63 countries | **0.867 ± 0.114** | Conservative headline. No leakage from nearby train points. [VALIDATION.md](docs/VALIDATION.md) |
-| 5-fold stratified CV, embeddings only | **0.911 ± 0.015** | Folds 0.911 / 0.898 / 0.894 / 0.917 / 0.934. [suitability_results.json](results/suitability/suitability_results.json) |
-| Ablation: lat/lon-derived features only | 0.852 | 8 features synthesized from coordinates, not measured resource data. [train_suitability.py:194](scripts/train_suitability.py) |
-| Ablation: OlmoEarth embeddings only | 0.913 | +6.1 points over the coordinate baseline. [suitability_results.json](results/suitability/suitability_results.json) |
-| Ablation: embeddings + coordinate features | 0.927 | Best configuration. [suitability_results.json](results/suitability/suitability_results.json) |
-| Random-label control | 0.497 | Expected ~0.50. Model does not memorize noise. [VALIDATION.md](docs/VALIDATION.md) |
-| Regional spread, 6 continents | 0.866 (Asia) to 0.943 (South America) | Per-continent AUC. [suitability_results.json](results/suitability/suitability_results.json) |
-| Re-run: spatial CV, 63 countries | 0.904 | Higher than the documented run. Not reproducible from code in this repo. [suitability_results_v3.json](results/suitability/suitability_results_v3.json) |
-| Re-run: overall CV | 0.924 | Same caveat as above. [suitability_results_v3.json](results/suitability/suitability_results_v3.json) |
-| Re-run, per type: solar / geothermal / hydro / wind | 0.959 / 0.930 / 0.918 / 0.898 | n = 3,205 / 260 / 1,281 / 3,254. Random-split CV, not spatial. [suitability_results_v3.json](results/suitability/suitability_results_v3.json) |
+| Spatial CV, leave-one-country-out, 63 countries | **0.867 ± 0.114** | Conservative headline. [VALIDATION.md](docs/VALIDATION.md) |
+| 5-fold stratified CV, embeddings only | **0.911 ± 0.015** | Folds .911/.898/.894/.917/.934. [json](results/suitability/suitability_results.json) |
+| Ablation: coordinates / embeddings / both | 0.852 / 0.913 / 0.927 | Embeddings add +6.1 pts. [json](results/suitability/suitability_results.json) |
+| Random-label control | 0.497 | Expected ~0.50, so no memorization. [VALIDATION.md](docs/VALIDATION.md) |
+| Regional spread, 6 continents | 0.866 Asia to 0.943 South America | [json](results/suitability/suitability_results.json) |
+| Later re-run: spatial CV / overall CV | 0.904 / 0.924 | Higher, but no code here reproduces it. [json](results/suitability/suitability_results_v3.json) |
+| Re-run per type: solar/geothermal/hydro/wind | 0.959 / 0.930 / 0.918 / 0.898 | n = 3,205 / 260 / 1,281 / 3,254. Random split, not spatial. [json](results/suitability/suitability_results_v3.json) |
 
-Re-run the ablation and 5-fold cross-validation on the embeddings committed here:
+Re-run the ablation and 5-fold CV:
 
 ```bash
 python scripts/train_suitability.py \
   --embeddings data/embeddings_v3/embeddings.npy \
   --metadata data/embeddings_v3/embeddings_meta.csv \
-  --cv-folds 5 \
-  --output-dir results/rerun
+  --cv-folds 5 --output-dir results/rerun
 ```
 
-This runs the same pipeline, but not on the same inputs. The committed [suitability_results.json](results/suitability/suitability_results.json) was produced from the earlier `embeddings/` set, which lives on Hugging Face and is excluded from this repository by `.gitignore`. Download that set to reproduce 0.911 and the ablation numbers exactly. `--output-dir` points at a new directory so the committed result file is not overwritten.
-
-There is **no script in this repository that reproduces the leave-one-country-out number or the v3 per-type numbers**. Both were produced outside the committed code.
+Same pipeline, different inputs: the committed results came from the earlier `embeddings/` set, which lives on Hugging Face and is gitignored here. **No script in this repo reproduces the leave-one-country-out or v3 numbers.**
 
 ## Status
 
-- **Done.** Embedding extraction pipeline, 8,000-location dataset over 212 countries, trained XGBoost classifiers per energy type, ablation and 5-fold CV with saved result files, and a FastAPI + Streamlit platform with MCP tools that scores stored embeddings on CPU.
-- **Open.** No committed script regenerates the spatial CV or the v3 results file, and the v1 `embeddings/` set behind the documented ablation and 5-fold numbers is gitignored, so those numbers cannot be re-derived from a fresh clone alone. The T=1 vs T=4 multi-temporal comparison needs a run that saves its output. Dataset is versioned by directory convention only: the Hugging Face repo holds `embeddings/` + `models/` alongside `embeddings_v3/` + `models_v3/`, with no tags or release versions in either repository.
-- **Known limitations.** Negative samples are random locations, so scores measure landscape resemblance to built sites, not viability. Geothermal has 260 samples. Spatial CV standard deviation is wide (±0.114), so per-country performance varies substantially. [docs/VALIDATION.md](docs/VALIDATION.md), [CITATION.cff](CITATION.cff) and the Hugging Face card still quote the older run's numbers and are not yet reconciled with the v3 file.
+- **Done.** Extraction pipeline, 8,000-location dataset over 212 countries, per-type XGBoost classifiers, ablation and 5-fold CV with saved results, plus a FastAPI + Streamlit platform with MCP tools scoring stored embeddings on CPU.
+- **Open.** No committed script regenerates the spatial CV or v3 results, and the v1 embeddings behind the documented numbers are gitignored, so a fresh clone cannot re-derive them. The T=1 vs T=4 comparison needs a run that saves output. Dataset is versioned by directory convention only (`embeddings/` + `models/` alongside `embeddings_v3/` + `models_v3/` on Hugging Face), with no tags in either repo.
+- **Known limitations.** Random negatives mean scores measure resemblance to built sites, not viability. Geothermal n=260. Spatial CV deviation is wide (±0.114), so per-country performance varies. [VALIDATION.md](docs/VALIDATION.md), [CITATION.cff](CITATION.cff) and the Hugging Face card still quote the older run and are not yet reconciled.
 
 ## Platform
 
-| Page | What it does |
-|------|-------------|
-| **AI Chat** | NVIDIA NIM LLM with system knowledge |
-| **Site Selection** | Map, pick location, Factor Engine + ML scores |
-| **Climate Risk** | NASA POWER data + IPCC AR6 SSP projections |
+FastAPI + Streamlit, three pages: **AI Chat** (NVIDIA NIM), **Site Selection** (map, Factor Engine + ML scores), **Climate Risk** (NASA POWER + IPCC AR6 SSP). The Factor Engine scores 19 configurable factors from live APIs, separate from the ML path. MCP tools included. See [PLATFORM.md](docs/PLATFORM.md).
 
-The Factor Engine scores 19 configurable factors from live APIs, separate from the ML path. MCP tools are available for programmatic access. Details in [PLATFORM.md](docs/PLATFORM.md).
+Data sources: NASA POWER, Open-Elevation, Open-Meteo Flood, USGS Earthquake, Planetary Computer (all keyless) and EIA API v2 (key required).
 
-## Data sources
-
-| Source | Data | Auth |
-|--------|------|------|
-| NASA POWER | Solar GHI, wind speed, temperature, cloud, precipitation | None |
-| Open-Elevation | Terrain slope and gradient | None |
-| Open-Meteo Flood | River discharge | None |
-| USGS Earthquake | Seismic activity | None |
-| EIA API v2 | US power plant data | API key |
-| Planetary Computer | Sentinel-2 imagery | None |
-
-## Install
+## Install and run
 
 ```bash
 git clone https://github.com/2imi9/O3earth.git
-cd O3earth
-pip install -r requirements.txt
+cd O3earth && pip install -r requirements.txt
+cp platform/.env.example platform/.env   # optional keys
 ```
-
-Optional API keys:
 
 ```bash
-cp platform/.env.example platform/.env
+cd platform && docker compose up --build
+# or: uvicorn api.main:app --port 8000  +  streamlit run ui/app.py --server.port 8501
 ```
 
-| Variable | Required for | Get one |
-|----------|-------------|---------|
-| `EIA_API_KEY` | US power plant data | [eia.gov/opendata](https://www.eia.gov/opendata/register.php) |
-| `NVIDIA_API_KEY` | AI Chat | [build.nvidia.com](https://build.nvidia.com/) |
-
-## Quick start
-
-Docker:
-
-```bash
-cd platform
-docker compose up --build
-```
-
-Manual:
-
-```bash
-cd platform
-uvicorn api.main:app --port 8000        # terminal 1
-streamlit run ui/app.py --server.port 8501   # terminal 2
-```
-
-Open [localhost:8501](http://localhost:8501). Site Selection and Climate Risk work without API keys. AI Chat requires `NVIDIA_API_KEY`.
+Open [localhost:8501](http://localhost:8501). Site Selection and Climate Risk work without keys. AI Chat needs `NVIDIA_API_KEY` ([build.nvidia.com](https://build.nvidia.com/)); US plant data needs `EIA_API_KEY` ([eia.gov/opendata](https://www.eia.gov/opendata/register.php)).
 
 ## Repository layout
 
@@ -122,21 +86,19 @@ src/scoring/        Suitability engine
 src/data_clients/   API clients
 src/mcp/            MCP tools + handlers
 src/llm/            NVIDIA NIM client
-platform/api/       FastAPI backend
-platform/ui/        Streamlit frontend
+platform/           FastAPI backend + Streamlit frontend
 scripts/            Data pipeline, embedding extraction, training
 data/embeddings_v3/ 8,000 x 768 embeddings + metadata
 results/            Trained models and metrics
 docs/               Validation and platform docs
 ```
 
-## Docs
+## Docs and data
 
-- [docs/VALIDATION.md](docs/VALIDATION.md): ablation, cross-validation, spatial CV, temporal validation, sanity checks
-- [docs/RESULTS.md](docs/RESULTS.md): result summary
-- [docs/PLATFORM.md](docs/PLATFORM.md): architecture and MCP tools
-
-Dataset and trained models on Hugging Face: [2imi9/O3earth](https://huggingface.co/datasets/2imi9/O3earth). Models are inside the dataset repository under `models/` and `models_v3/`; there is no separate model page.
+- [VALIDATION.md](docs/VALIDATION.md): ablation, cross-validation, spatial CV, temporal validation, sanity checks
+- [RESULTS.md](docs/RESULTS.md): result summary
+- [PLATFORM.md](docs/PLATFORM.md): architecture and MCP tools
+- [2imi9/O3earth](https://huggingface.co/datasets/2imi9/O3earth) on Hugging Face: dataset and trained models (models sit inside the dataset repo under `models/` and `models_v3/`; there is no separate model page)
 
 ## References
 
